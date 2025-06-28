@@ -1,0 +1,22 @@
+# Data path
+data:
+    raw_dir: 'data/raw/'
+    processed_dir: 'data/processed/'
+
+
+
+
+
+# Modeling configuration
+# For a training from season 2012/2013 to 2014/2015, first_year = 2012 and last_year = 2015. Same reasoning for the testing
+train:
+    first_year: 2012
+    last_year: 2024
+
+test:
+    first_year: 2024
+    last_year: 2025
+
+
+
+# Models path
