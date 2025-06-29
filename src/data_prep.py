@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from typing import Sequence, Mapping, Tuple
 from datetime import datetime
 
@@ -23,14 +24,14 @@ def import_raw_aggregated_dataset(first_year: int,
 
     for year in range(first_year, last_year):
         filename = f'ligue1_{year}_{year + 1}.csv'
-        filepath = os.path.join('../' + raw_data_folder, filename)
+        filepath = os.path.join('../' + raw_data_file, filename)
 
         if not os.path.exists(filepath):
             print(f"File not found: {filepath} (ignored)")
             continue
 
         data = pd.read_csv(filepath)
-        data.dropna(how='all', inplace=True)
+        data.dropna(how = 'all', inplace = True)
         df_list.append(data)
 
     if not df_list:
@@ -70,10 +71,10 @@ def dataframe_cleaning(df: pd.DataFrame,
     # Values replacement in specific columns
     if values_to_rename:
         for col, (old_val, new_val) in values_to_rename.items():
-            if col in df.columns:
-                df[col] = df[col].replace(old_val, new_val)
+            if col in df_cleaned.columns:
+                df_cleaned[col] = df_cleaned[col].replace(old_val, new_val)
 
-    return df
+    return df_cleaned
 
 
 def convert_dates_column(df: pd.DataFrame,
@@ -90,7 +91,7 @@ def convert_dates_column(df: pd.DataFrame,
         date_column: Name of the column to convert
 
     Returns:
-        The dataframe with the date column converted to datetime objects.
+        The dataframe with the date column converted to datetime objects
     """
 
     def parse_date(value: str):
