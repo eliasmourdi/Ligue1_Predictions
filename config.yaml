@@ -1,10 +1,21 @@
-# Data path
+# Data configuration
 data:
+    # paths: data must be imported from https://www.football-data.co.uk/francem.php
+    # name of different files: ligue1_{year1}_{year2}
+    # example: for season 2014/2015 -> ligue1_2014_2015
     raw_dir: 'data/raw/'
+
+    # data path after processing
     processed_dir: 'data/processed/'
 
+    # columns information (based on the documentation: https://www.football-data.co.uk/notes.txt)
+    cols_to_delete_base: ['Div', 'Time', 'HS', 'AS', 'HST', 'AST', 'HC', 'AC', 'HF', 'AF', 'HY', 'AY', 'HR', 'AR', 'MaxH', 'MaxD', 'MaxA', 'AvgH', 'AvgD', 'AvgA', 'B365>2.5', 'B365<2.5', 'P<2.5', 'P>2.5', 'Max<2.5', 'Max>2.5', 'Avg<2.5', 'Avg>2.5', 'AHh', 'B365AHH', 'B365AHA', 'PAHH', 'PAHA', 'MaxAHH', 'MaxAHA', 'AvgAHH', 'AvgAHA', 'AvgC<2.5', 'AvgC>2.5', 'MaxC<2.5', 'MaxC>2.5', 'AHCh', 'B365CAHH', 'B365CAHA', 'PCAHH', 'PCAHA', 'MaxCAHH', 'MaxCAHA', 'AvgCAHH', 'AvgCAHA', 'MaxCH', 'MaxCD', 'MaxCA', 'AvgCH', 'AvgCD', 'AvgCA', 'B365C>2.5', 'B365C<2.5', 'PC<2.5', 'PC>2.5', 'PC<2.5', 'BWCA', 'IWCH', 'IWCD', 'IWCA', 'VCCH', 'VCCD', 'VCCA', 'B365CH', 'B365CD', 'B365CA', 'BWCH', 'BWCD', 'PSCH', 'PSCD', 'PSCA', 'WHCH', 'WHCD', 'WHCA', 'HTHG', 'HTAG', 'HTR']
 
+    cols_to_rename_base: {'Date': 'date', 'HomeTeam': 'dom', 'AwayTeam': 'ext', 'FTHG': 'nb_buts_dom_final', 'FTAG': 'nb_buts_ext_final', 'FTR': 'res_final'}
 
+    values_to_rename_base: {'res_final': ('D', 'Nul'), 'res_final': ('A', 'Ext'), 'res_final': ('H', 'Dom')}
+
+    date_column: 'date'
 
 
 # Modeling configuration
