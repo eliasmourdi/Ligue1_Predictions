@@ -91,7 +91,7 @@ def convert_dates_column(df: pd.DataFrame,
         date_column: Name of the column to convert
 
     Returns:
-        The dataframe with the date column converted to datetime objects.
+        The dataframe with the date column converted to datetime objects
     """
 
     def parse_date(value: str):
