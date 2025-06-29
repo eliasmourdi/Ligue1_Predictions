@@ -97,3 +97,36 @@ def season(date: datetime.date) -> str:
     return season
 
 
+def gen_ranking(df: pd.DataFrame, club: str) -> int:
+    """
+    Computes the ranking of a team from matches present in a dataframe
+    The ranking is computed with the number of points of each team. In case of equality, the goal difference is taken into consideration
+    
+    Args:
+        df: dataframe to consider to compute the ranking
+        club: club to compute the ranking
+        
+    Returns:
+        The ranking of the team
+    """
+    
+    if df.empty:
+        return -1
+    
+    home_points = df.groupby(col_home_team)[col_final_result].apply(lambda x: (x == final_result_home).sum() * 3 + (x == final_result_draw).sum()).reset_index(name = 'points')
+    away_points = df.groupby(col_away_team)[col_final_result].apply(lambda x: (x == final_result_away).sum() * 3 + (x == final_result_draw).sum()).reset_index(name = 'points')
+    total_points = pd.merge(home_points, away_points, left_on = col_home_team, right_on = col_away_team, how='outer', suffixes = ('_home', '_away')).fillna(0)
+ 
+    total_points['total_points'] = total_points['points_home'] + total_points['points_away']
+    
+    total_points['team'] = total_points[col_home_team].fillna(total_points[col_away_team])
+    total_points['goal_diff'] = total_points['team'].apply(lambda x: goal_diff(df, x))
+    
+    total_points = total_points.sort_values(by=['total_points', 'goal_diff'], ascending=False).reset_index(drop=True)
+    
+    if (total_points['team'] == club).any():
+        ranking = total_points[total_points['team'] == club].index[0] + 1
+    else:
+        ranking = -1
+        
+    return ranking
