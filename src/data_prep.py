@@ -71,7 +71,7 @@ def dataframe_cleaning(df: pd.DataFrame,
     # Values replacement in specific columns
     if values_to_rename:
         for col, (old_val, new_val) in values_to_rename.items():
-            if col in df.columns:
+            if col in df_cleaned.columns:
                 df_cleaned[col] = df_cleaned[col].replace(old_val, new_val)
 
     return df_cleaned
