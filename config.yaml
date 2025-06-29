@@ -13,17 +13,17 @@ data:
 
     cols_to_rename_base: 
         'Date': 'date'
-        'HomeTeam': 'dom'
-        'AwayTeam': 'ext'
-        'FTHG': 'nb_buts_dom_final'
-        'FTAG': 'nb_buts_ext_final'
-        'FTR': 'res_final'
+        'HomeTeam': 'home'
+        'AwayTeam': 'away'
+        'FTHG': 'nb_goals_home_final'
+        'FTAG': 'nb_goal_away_final'
+        'FTR': 'final_result'
 
     values_to_rename_base:
-        res_final:
-            'D': 'Nul'
-            'H': 'Dom'
-            'A': 'Ext'
+        final_result:
+            'D': 'draw'
+            'H': 'home'
+            'A': 'away'
 
     date_column: 'date'
 
