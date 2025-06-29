@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import Sequence, Mapping, Tuple
+from datetime import datetime
 
 
 def import_raw_aggregated_dataset(first_year: int,
@@ -10,8 +11,8 @@ def import_raw_aggregated_dataset(first_year: int,
     All the files have a name like 'ligue1_firstYear_lastYear'
     
     Args:
-        first_year: first year of the first season we want to save (e.g 2012 for 2012/2013)
-        last_year: last year of the last season we want to save (e.g 2015 for 2014/2015)
+        first_year: first year of the first season we want to save (e.g. 2012 for 2012/2013)
+        last_year: last year of the last season we want to save (e.g. 2015 for 2014/2015)
         raw_data_file: folder with all the raw data to aggregate
 
     Returns:
@@ -60,16 +61,47 @@ def dataframe_cleaning(df: pd.DataFrame,
     
     # Columns removing
     if cols_to_delete:
-        df_cleaned.drop(columns = cols_to_delete, inplace = True)
+        df_cleaned.drop(columns=cols_to_delete, inplace=True)
 
     # Columns renaming
     if cols_to_rename:
-        df_cleaned.rename(columns = cols_to_rename, inplace = True)
+        df_cleaned.rename(columns=cols_to_rename, inplace=True)
 
     # Values replacement in specific columns
     if values_to_rename:
         for col, (old_val, new_val) in values_to_rename.items():
             if col in df.columns:
                 df[col] = df[col].replace(old_val, new_val)
+
+    return df
+
+
+def convert_dates_column(df: pd.DataFrame,
+                         date_column: str) -> pd.DataFrame:
+    """
+    Converts a date column in a dataframe to datetime objects, handling multiple formats
+
+    This function attempts to parse each value in the specified column using two common date formats:
+    - '%d/%m/%y' (e.g., 12/08/23)
+    - '%d/%m/%Y' (e.g., 12/08/2023)
+
+    Args:
+        df: The input dataframe containing a column with date strings
+        date_column: Name of the column to convert
+
+    Returns:
+        The dataframe with the date column converted to datetime objects.
+    """
+
+    def parse_date(value: str):
+        for fmt in ("%d/%m/%y", "%d/%m/%Y"):
+            try:
+                return datetime.strptime(value, fmt)
+            except (ValueError, TypeError):
+                continue
+        raise ValueError(f"Unrecognized date format: {value}")
+
+    df = df.copy()
+    df[date_column] = df[date_column].apply(parse_date)
 
     return df
