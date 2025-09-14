@@ -42,9 +42,9 @@ def import_raw_aggregated_dataset(first_year: int,
 
 
 def dataframe_cleaning(df: pd.DataFrame,
-                       cols_to_delete: Sequence[str] | None,
-                       cols_to_rename: Mapping[str, str] | None,
-                       values_to_rename: Mapping[str, Tuple[str, str]] | None) -> pd.DataFrame:
+                       cols_to_delete: Sequence[str] = [],
+                       cols_to_rename: Mapping[str, str] = {},
+                       values_to_rename: Mapping[str, Mapping[str, str]] = {}) -> pd.DataFrame:
     """
     Cleans a dataframe by dropping columns, renaming columns, and renaming values in specific columns
 
@@ -52,7 +52,7 @@ def dataframe_cleaning(df: pd.DataFrame,
         df: dataframe to clean
         cols_to_delete: list of columns to delete from the dataframe
         cols_to_rename: keys are old column names, values are new column names
-        values_to_rename: keys are column names, values are tuples of (old_value, new_value) to replace in that column
+        values_to_rename: keys are column names, values are in a dict {old_value: new_value} to replace in that column
 
     Returns:
         A dataframe cleaned according to these 3 rules
@@ -70,9 +70,9 @@ def dataframe_cleaning(df: pd.DataFrame,
 
     # Values replacement in specific columns
     if values_to_rename:
-        for col, (old_val, new_val) in values_to_rename.items():
+        for col, replacements in values_to_rename.items():
             if col in df_cleaned.columns:
-                df_cleaned[col] = df_cleaned[col].replace(old_val, new_val)
+                df_cleaned[col] = df_cleaned[col].replace(replacements)
 
     return df_cleaned
 
