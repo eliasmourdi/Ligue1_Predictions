@@ -2,7 +2,7 @@ import os
 import yaml
 
 
-def load_config(path = '../config.yaml'):
+def load_config(path):
     """
     Loads a config file according to the path given in argument
     """
