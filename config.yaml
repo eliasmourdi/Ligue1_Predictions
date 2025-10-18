@@ -32,3 +32,16 @@ final_result_column: 'final_result'
 
 # Dir to store dataframes after cleaning
 cleaning_dir: 'data/cleaned'
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 2) Preprocessing
+# The aim of this section is to create new columns necessary for modeling
+# ..... TODO for the description of new columns
+
+
+
+
+
+
+
