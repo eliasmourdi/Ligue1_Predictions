@@ -1,43 +1,34 @@
-# Data configuration
-data:
-    # paths: data must be imported from https://www.football-data.co.uk/francem.php
-    # name of different files: ligue1_{year1}_{year2}
-    # example: for season 2014/2015 -> ligue1_2014_2015
-    raw_dir: 'data/raw/'
+# Files imported from https://www.football-data.co.uk/francem.php
 
-    # data path after processing
-    processed_dir: 'data/processed/'
-
-    # columns information (based on the documentation: https://www.football-data.co.uk/notes.txt)
-    cols_to_delete_base: ['Div', 'Time', 'HS', 'AS', 'HST', 'AST', 'HC', 'AC', 'HF', 'AF', 'HY', 'AY', 'HR', 'AR', 'MaxH', 'MaxD', 'MaxA', 'AvgH', 'AvgD', 'AvgA', 'B365>2.5', 'B365<2.5', 'P<2.5', 'P>2.5', 'Max<2.5', 'Max>2.5', 'Avg<2.5', 'Avg>2.5', 'AHh', 'B365AHH', 'B365AHA', 'PAHH', 'PAHA', 'MaxAHH', 'MaxAHA', 'AvgAHH', 'AvgAHA', 'AvgC<2.5', 'AvgC>2.5', 'MaxC<2.5', 'MaxC>2.5', 'AHCh', 'B365CAHH', 'B365CAHA', 'PCAHH', 'PCAHA', 'MaxCAHH', 'MaxCAHA', 'AvgCAHH', 'AvgCAHA', 'MaxCH', 'MaxCD', 'MaxCA', 'AvgCH', 'AvgCD', 'AvgCA', 'B365C>2.5', 'B365C<2.5', 'PC<2.5', 'PC>2.5', 'PC<2.5', 'BWCA', 'IWCH', 'IWCD', 'IWCA', 'VCCH', 'VCCD', 'VCCA', 'B365CH', 'B365CD', 'B365CA', 'BWCH', 'BWCD', 'PSCH', 'PSCD', 'PSCA', 'WHCH', 'WHCD', 'WHCA', 'HTHG', 'HTAG', 'HTR']
-
-    cols_to_rename_base: 
-        'Date': 'date'
-        'HomeTeam': 'home'
-        'AwayTeam': 'away'
-        'FTHG': 'nb_goals_home_final'
-        'FTAG': 'nb_goal_away_final'
-        'FTR': 'final_result'
-
-    values_to_rename_base:
-        final_result:
-            'D': 'draw'
-            'H': 'home'
-            'A': 'away'
-
-    date_column: 'date'
+# Folder where raw files are stored after loading
+# name of different files: ligue1_{year1}_{year2}
+# example: for season 2014/2015 -> ligue1_2014_2015
+raw_dir: 'data/raw'
 
 
-# Modeling configuration
-# For a training from season 2012/2013 to 2014/2015, first_year = 2012 and last_year = 2015. Same reasoning for the testing
-train:
-    first_year: 2012
-    last_year: 2024
-
-test:
-    first_year: 2024
-    last_year: 2025
-
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 1) Cleaning
+# The aim of this section is to aggregate the raw imported dataframes into cleaned dataframes with the following columns:
+# - a date column, with the date of the match
+# - a home and an away column, with the teams involved in the match
+# - a columns indicating the number of goals scored by the home team, same for the away team
+# - a categorical column indicating the final result of the match (home for home victory, away for away victory, or draw)
+# - columns with betting odds for home team victory, away team victory or draws for all bookmakers. Note that for each season, there may be different bookmakers mentionned in the different dataframes
 
 
-# Models path
+# Imported data information
+# first_date_first_season: for example, if the first imported season is 2014/1015, specify 2014
+# last_date_last_season: for example, if the last imported season is 2019/2020, specify 2020
+first_date_first_season: 2012
+last_date_last_season: 2025
+
+# Cleaned columns specification
+date_column: 'date'
+home_column: 'home'
+away_column: 'away'
+nb_goals_home_column: 'nb_goals_home'
+nb_goals_away_column: 'nb_goals_away'
+final_result_column: 'final_result'
+
+# Dir to store dataframes after cleaning
+cleaning_dir: 'data/cleaned'

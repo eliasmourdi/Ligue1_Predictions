@@ -24,7 +24,7 @@ def import_raw_aggregated_dataset(first_year: int,
 
     for year in range(first_year, last_year):
         filename = f'ligue1_{year}_{year + 1}.csv'
-        filepath = os.path.join('../' + raw_data_file, filename)
+        filepath = os.path.join(raw_data_file, filename)
 
         if not os.path.exists(filepath):
             print(f"File not found: {filepath} (ignored)")
@@ -42,9 +42,9 @@ def import_raw_aggregated_dataset(first_year: int,
 
 
 def dataframe_cleaning(df: pd.DataFrame,
-                       cols_to_delete: Sequence[str] = [],
-                       cols_to_rename: Mapping[str, str] = {},
-                       values_to_rename: Mapping[str, Mapping[str, str]] = {}) -> pd.DataFrame:
+                       cols_to_delete: Sequence[str]=[],
+                       cols_to_rename: Mapping[str, str]={},
+                       values_to_rename: Mapping[str, Mapping[str, str]]={}) -> pd.DataFrame:
     """
     Cleans a dataframe by dropping columns, renaming columns, and renaming values in specific columns
 
