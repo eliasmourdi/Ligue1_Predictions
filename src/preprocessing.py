@@ -8,6 +8,7 @@ class Preprocessing:
 
     NB: a cleaned dataframe is a dataframe whose columns are the following:
         - date of the match
+        - season of the match (e.g. if a match was played on September 2012, season = '2012/2013')
         - home team
         - away team
         - number of goals scored by the home team
@@ -30,9 +31,10 @@ class Preprocessing:
             - config: dictionnary with the information specified in the config file
         """
         self.df = df
-        
+
         # Columns identification
         self.date_column = config['date_column']
+        self.season_column = config['season_column']
         self.home_column = config['home_column']
         self.away_column = config['away_column']
         self.nb_goals_home_column = config['nb_goals_home_column']
@@ -40,9 +42,9 @@ class Preprocessing:
         self.final_result_column = config['final_result_column']
 
         # Other columns are betting odds columns
-        columns_to_exclude = set([self.date_column, self.home_column, self.away_column, self.nb_goals_home_column, self.nb_goals_away_column, self.final_result_column])
+        columns_to_exclude = set([self.date_column, self.season_column, self.home_column, self.away_column, self.nb_goals_home_column, self.nb_goals_away_column, self.final_result_column])
         self.odds_columns = [c for c in self.df.columns if c not in columns_to_exclude]
-
+        
         # Number of odds columns: multiple of 3 (one odd for home team, one odd for away team, one for draw)
         if len(self.odds_columns) % 3 != 0:
             raise ValueError(f"There must be a multiple of 3 odd columns, there are currently {len(self.odds_columns)} columns")
