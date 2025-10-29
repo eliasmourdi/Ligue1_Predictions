@@ -106,3 +106,27 @@ def convert_dates_column(df: pd.DataFrame,
     df[date_column] = df[date_column].apply(parse_date)
 
     return df
+
+
+def season(date: datetime.date) -> str:
+    """
+    Returns the season of the match from its date, under the format 'year1/year2'
+    For instance, if a match was played at September 2012, the corresponding season is '2012/2013'
+
+    Args:
+        date: date of the match
+
+    Returns:
+        The season of the match
+    """
+    month = date.month
+    year = date.year
+    season = ''
+
+    if month <= 6: # a ligue 1 season ends in June max
+        season = season + str(year - 1) + '/' + str(year)
+
+    if month >= 8: # a ligue 1 season starts in August min
+        season = season + str(year) + '/' + str(year + 1)
+
+    return season
