@@ -1,5 +1,49 @@
 import pandas as pd
 from typing import Sequence
+import warnings
+
+
+def nb_points(df: pd.DataFrame,
+              club: str,
+              col_home_team='home',
+              col_away_team='away',
+              col_final_result='final_result') -> int:
+    """
+    Computes the number of points won by a club during matches present in the dataframe df
+    A victory brings 3 points, a draw 1 point and a defeat 0 point
+
+    Args:
+        df: dataframe with the matches to consider
+        club: team to compute the number of points
+        col_home_team: name of the column mentionning the home team
+        col_away_team: name of the column mentionning the away team
+        col_final_result: name of the column mentionning the categorical final result (home for home team victory, away for away team victory, draw otherwise)
+
+    Returns:
+        The number of points won by the club during matches present in the dataframe
+    """
+    if club not in df['home'].unique():
+        warnings.warn(f"{club} did not play home in the dataframe providen as input")
+    if club not in df['away'].unique():
+        warnings.warn(f"{club} did not play away in the dataframe providen as input")
+    if (club not in df['home'].unique()) and (club not in df['away'].unique()):
+        raise AttributeError(f"{club} did not play in the dataframe providen as input")
+    
+    points_home = df[(df[col_home_team] == club) & ((df[col_final_result] == 'home') | (df[col_final_result] == 'draw'))]
+    n_pts_home = (points_home[col_final_result] == 'home').sum() * 3 + (points_home[col_final_result] == 'draw').sum()
+    
+    points_away = df[(df[col_away_team] == club) & ((df[col_final_result] == 'away') | (df[col_final_result] == 'draw'))]
+    n_pts_away = (points_away[col_final_result] == 'away').sum() * 3 + (points_away[col_final_result] == 'draw').sum()
+    
+    n_pts = n_pts_home + n_pts_away
+    
+    return n_pts
+
+
+
+
+
+
 
 
 class Preprocessing:
