@@ -13,7 +13,7 @@ raw_dir: 'data/raw'
 # - a season column, with the season of the match, under the format 'year1/year2' (e.g. '2012/2013')
 # - a home and an away column, with the teams involved in the match
 # - a columns indicating the number of goals scored by the home team, same for the away team
-# - a categorical column indicating the final result of the match (home for home team victory, away for away team victory, or draw)
+# - a categorical column indicating the final result of the match ('home' for home team victory, 'away' for away team victory, or 'draw')
 # - columns with betting odds for home team victory, away team victory or draws for all bookmakers. Note that for each season, there may be different bookmakers mentionned in the different dataframes
 
 

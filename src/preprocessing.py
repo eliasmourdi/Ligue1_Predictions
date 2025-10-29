@@ -17,16 +17,16 @@ def nb_points(df: pd.DataFrame,
         club: team to compute the number of points
         col_home_team: name of the column mentionning the home team
         col_away_team: name of the column mentionning the away team
-        col_final_result: name of the column mentionning the categorical final result (home for home team victory, away for away team victory, draw otherwise)
+        col_final_result: name of the column mentionning the categorical final result ('home' for home team victory, 'away' for away team victory, 'draw' otherwise)
 
     Returns:
         The number of points won by the club during matches present in the dataframe
     """
-    if club not in df['home'].unique():
+    if club not in df[col_home_team].unique():
         warnings.warn(f"{club} did not play home in the dataframe providen as input")
-    if club not in df['away'].unique():
+    if club not in df[col_away_team].unique():
         warnings.warn(f"{club} did not play away in the dataframe providen as input")
-    if (club not in df['home'].unique()) and (club not in df['away'].unique()):
+    if (club not in df[col_home_team].unique()) and (club not in df[col_away_team].unique()):
         raise AttributeError(f"{club} did not play in the dataframe providen as input")
     
     points_home = df[(df[col_home_team] == club) & ((df[col_final_result] == 'home') | (df[col_final_result] == 'draw'))]
@@ -40,10 +40,46 @@ def nb_points(df: pd.DataFrame,
     return n_pts
 
 
+def goal_diff(df: pd.DataFrame,
+              club: str,
+              col_home_team='home',
+              col_away_team='away',
+              nb_goals_home_column='nb_goals_home',
+              nb_goals_away_column='nb_goals_away') -> int:
+    """
+    Computes the goal difference of a club during matches present in the dataframe df
 
+    Args:
+        df: dataframe with the matches to consider
+        club: team to compute the goal difference
+        col_home_team: name of the column mentionning the home team
+        col_away_team: name of the column mentionning the away team
+        nb_goals_home_column: name of the column providing the number of goals scored by home team
+        nb_goals_away_column: name of the column providing the number of goals scored by away team
 
+    Returns:
+        The goal difference of the club during the matches present in the dataframe df
 
+    """
+    if club not in df['home'].unique():
+        warnings.warn(f"{club} did not play home in the dataframe providen as input")
+    if club not in df['away'].unique():
+        warnings.warn(f"{club} did not play away in the dataframe providen as input")
+    if (club not in df['home'].unique()) and (club not in df['away'].unique()):
+        raise AttributeError(f"{club} did not play in the dataframe providen as input")
+        
+    matches_home = df[df[col_home_team] == club]
+    matches_away = df[df[col_away_team] == club]
 
+    goals_home_for = matches_home[nb_goals_home_column].sum()
+    goals_home_against = matches_home[nb_goals_away_column].sum()
+
+    goals_away_for = matches_away[nb_goals_home_column].sum()
+    goals_away_against = matches_away[nb_goals_away_column].sum()
+
+    goal_diff = goals_home_for + goals_away_for - goals_home_against - goals_away_against
+
+    return goal_diff
 
 
 class Preprocessing:
