@@ -31,7 +31,9 @@ nb_goals_away_column: 'nb_goals_away'
 final_result_column: 'final_result'
 
 # Dir to store dataframes after cleaning
-cleaning_dir: 'data/cleaned'
+cleaned_dir: 'data/cleaned'
+cleaned_train_df_name: 'cleaned_df_train'
+cleaned_test_df_name: 'cleaned_df_test'
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
