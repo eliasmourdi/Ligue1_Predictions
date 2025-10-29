@@ -1,21 +1,29 @@
 import pandas as pd
-from config import load_config
-from datetime import date
+import datetime
 
 
-# Config file loading
-config = load_config()
+def season(date: datetime.date) -> str:
+    """
+    Returns the season of the match from its date, under the format 'year1/year2'
+    For instance, if a match was played at September 2012, the corresponding season is '2012/2013'
 
-col_home_team = config['data']['cols_to_rename_base']['HomeTeam']
-col_away_team = config['data']['cols_to_rename_base']['AwayTeam']
+    Args:
+        date: date of the match
 
-col_nb_goals_home_team = config['data']['cols_to_rename_base']['FTHG']
-col_nb_goals_away_team = config['data']['cols_to_rename_base']['FTAG']
+    Returns:
+        The season of the match
+    """
+    month = date.month
+    year = date.year
+    season = ''
 
-final_result_home = config['data']['values_to_rename_base']['final_result']['H']
-final_result_away = config['data']['values_to_rename_base']['final_result']['A']
-final_result_draw = config['data']['values_to_rename_base']['final_result']['D']
-col_final_result = config['data']['cols_to_rename_base']['FTR']
+    if month <= 6: # a ligue 1 season ends in June max
+        season = season + str(year - 1) + '/' + str(year)
+
+    if month >= 8: # a ligue 1 season starts in August min
+        season = season + str(year) + '/' + str(year + 1)
+
+    return season
 
 
 def nb_points(df: pd.DataFrame,
@@ -71,30 +79,6 @@ def goal_diff(df: pd.DataFrame,
     goal_diff = goals_home_for + goals_away_for - goals_home_against - goals_away_against
 
     return goal_diff
-
-
-def season(date: datetime.date) -> str:
-    """
-    Returns the season of the match from its date
-
-    Args:
-        date: date of the match
-
-    Returns:
-        The season of the match
-    """
-    
-    month = date.month
-    year = date.year
-    season = ''
-
-    if month <= 6: # a ligue 1 season ends in June max
-        season = season + str(year - 1) + '/' + str(year)
-
-    if month >= 8: # a ligue 1 season starts in August min
-        season = season + str(year) + '/' + str(year + 1)
-
-    return season
 
 
 def gen_ranking(df: pd.DataFrame, club: str) -> int:
