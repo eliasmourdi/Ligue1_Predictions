@@ -44,8 +44,43 @@ cleaned_test_df_name: 'cleaned_df_test'
 # ..... TODO for the description of new columns
 
 
+# Odd indicators
+odd_home_column: 'odd_home'
+odd_away_column: 'odd_away'
+odd_draw_column: 'odd_draw'
 
+# Current season indicators
+nb_points_home_column: 'current_season_points_home'
+nb_points_away_column: 'current_season_points_away'
 
+general_ranking_home_column: 'current_season_general_ranking_home'
+general_ranking_away_column: 'current_season_general_ranking_away'
 
+nb_goals_scored_home_column: 'current_season_nb_goals_scored_home'
+nb_goals_scored_away_column: 'current_season_nb_goals_scored_away'
+
+nb_goals_conceded_home_column: 'current_season_nb_goals_conceded_home'
+nb_goals_conceded_away_column: 'current_season_nb_goals_conceded_away'
+
+goal_difference_home_column: 'current_season_goal_difference_home'
+goal_difference_away_column: 'current_season_goal_difference_away'
+
+attack_ranking_home_column: 'current_season_attack_ranking_home'
+attack_ranking_away_column: 'current_season_attack_ranking_away'
+
+defense_ranking_home_column: 'current_season_defense_ranking_home'
+defense_ranking_away_column: 'current_season_defense_ranking_away'
+
+nb_points_home_matches_column: 'current_season_home_points_home'
+nb_points_away_matches_column: 'current_season_away_points_away'
+
+home_ranking_column: 'current_season_home_ranking_home'
+away_ranking_column: 'current_season_away_ranking_away'
+
+nb_goals_scored_at_home_column: 'current_season_nb_goals_scored_home_home'
+nb_goals_scored_away_column: 'current_season_nb_goals_scored_away_away'
+
+nb_goals_conceded_at_home_column: 'current_season_nb_goals_conceded_home_home'
+nb_goals_conceded_away_column: 'current_season_nb_goals_conceded_away_away'
 
 
