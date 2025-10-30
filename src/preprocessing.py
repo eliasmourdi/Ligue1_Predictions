@@ -260,6 +260,7 @@ class Preprocessing:
         
         return df
 
+    
     def computes_absolute_recent_form_indicators(self, max_matches: int=None):
         """
         Absolute: regardless of the teams played against 
@@ -354,7 +355,85 @@ class Preprocessing:
                 df.at[i, self.config['abs_recent_ranking_away_team']] = away_rank
 
         return df
-                
+
+
+    def computes_absolute_historical_form_indicators(self):
+        """
+        Absolute: regardless of the teams played against 
+        Historical form: all previous seasons
+        Absolute historical form indicators are therefore indicators related to the previous seasons
+            
+        Absolute historical form indicators computed by this method are the following:
+        - points averaged by season
+        - goals scored averaged by season
+        - goals conceded averaged by season
+        - ranking averaged by season
+        """
+        df = self.df.copy()
+        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
+        
+        # Initialization
+        indicators = [self.config['abs_hist_nb_points_by_season_home_team'],
+                      self.config['abs_hist_nb_points_by_season_away_team'],
+                      self.config['abs_hist_nb_goals_scored_by_season_home_team'],
+                      self.config['abs_hist_nb_goals_scored_by_season_away_team'],
+                      self.config['abs_hist_nb_goals_conceded_by_season_home_team'],
+                      self.config['abs_hist_nb_goals_conceded_by_season_away_team'],
+                      self.config['abs_hist_ranking_by_season_home_team'],
+                      self.config['abs_hist_ranking_by_season_away_team']]
+
+        for col in indicators:
+            df[col] = None
+
+        # Season loop
+        for i, row in df.iterrows():
+            current_season = row[self.config['season_column']]
+            current_date = row[self.config['date_column']]
+            home_team = row[self.config['home_column']]
+            away_team = row[self.config['away_column']]
+
+            # All previous seasons
+            past_seasons = df[(df[self.config['date_column']] < current_date) & (df[self.config['season_column']] != current_season)]
+
+            if past_seasons.empty:
+                df.at[i, self.config['abs_hist_nb_points_by_season_home_team']] = -1
+                df.at[i, self.config['abs_hist_nb_points_by_season_away_team']] = -1
+                df.at[i, self.config['abs_hist_nb_goals_scored_by_season_home_team']] = -1
+                df.at[i, self.config['abs_hist_nb_goals_scored_by_season_away_team']] = -1
+                df.at[i, self.config['abs_hist_nb_goals_conceded_by_season_home_team']] = -1
+                df.at[i, self.config['abs_hist_nb_goals_conceded_by_season_away_team']] = -1
+                df.at[i, self.config['abs_hist_ranking_by_season_home_team']] = -1
+                df.at[i, self.config['abs_hist_ranking_by_season_away_team']] = -1
+                continue
+
+            # Indicators computation
+            home_points_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._nb_points(x, home_team)).mean()
+            away_points_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._nb_points(x, away_team)).mean()
+
+            home_goals_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_scored(x, home_team)).mean()
+            away_goals_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_scored(x, away_team)).mean()
+
+            home_conceded_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_conceded(x, home_team)).mean()
+            away_conceded_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_conceded(x, away_team)).mean()
+
+            home_rank_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._ranking_club(x, home_team)).mean()
+            away_rank_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._ranking_club(x, away_team)).mean()
+
+            # Assignment
+            df.at[i, self.config['abs_hist_nb_points_by_season_home_team']] = home_points_avg
+            df.at[i, self.config['abs_hist_nb_points_by_season_away_team']] = away_points_avg
+            df.at[i, self.config['abs_hist_nb_goals_scored_by_season_home_team']] = home_goals_avg
+            df.at[i, self.config['abs_hist_nb_goals_scored_by_season_away_team']] = away_goals_avg
+            df.at[i, self.config['abs_hist_nb_goals_conceded_by_season_home_team']] = home_conceded_avg
+            df.at[i, self.config['abs_hist_nb_goals_conceded_by_season_away_team']] = away_conceded_avg
+            df.at[i, self.config['abs_hist_ranking_by_season_home_team']] = home_rank_avg
+            df.at[i, self.config['abs_hist_ranking_by_season_away_team']] = away_rank_avg
+            
+        return df
+
+    
+
+    
                 
 
             

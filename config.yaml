@@ -20,7 +20,7 @@ raw_dir: 'data/raw'
 # Imported data information
 # first_date_first_season: for example, if the first imported season is 2014/1015, specify 2014
 # last_date_last_season: for example, if the last imported season is 2019/2020, specify 2020
-first_date_first_season: 2012
+first_date_first_season: 2010
 last_date_last_season: 2025
 
 # Cleaned columns specification
@@ -100,6 +100,19 @@ abs_recent_goal_difference_away_team: 'abs_recent_goal_difference_away_team'
 
 abs_recent_ranking_home_team: 'abs_recent_ranking_home_team'
 abs_recent_ranking_away_team: 'abs_recent_ranking_away_team'
+
+# Absolute historical form indicators
+abs_hist_nb_points_by_season_home_team: 'abs_hist_nb_points_by_season_home_team'
+abs_hist_nb_points_by_season_away_team: 'abs_hist_nb_points_by_season_away_team'
+
+abs_hist_nb_goals_scored_by_season_home_team: 'abs_hist_nb_goals_scored_by_season_home_team'
+abs_hist_nb_goals_scored_by_season_away_team: 'abs_hist_nb_goals_scored_by_season_away_team'
+
+abs_hist_nb_goals_conceded_by_season_home_team: 'abs_hist_nb_goals_conceded_by_season_home_team'
+abs_hist_nb_goals_conceded_by_season_away_team: 'abs_hist_nb_goals_conceded_by_season_away_team'
+
+abs_hist_ranking_by_season_home_team: 'abs_hist_ranking_by_season_home_team'
+abs_hist_ranking_by_season_away_team: 'abs_recent_ranking_by_season_away_team'
 
 
 
