@@ -1,6 +1,4 @@
 import pandas as pd
-from typing import Sequence
-import warnings
 
 
 def nb_points(df: pd.DataFrame,
@@ -22,12 +20,8 @@ def nb_points(df: pd.DataFrame,
     Returns:
         The number of points won by the club during matches present in the dataframe
     """
-    if club not in df[col_home_team].unique():
-        warnings.warn(f"{club} did not play home in the dataframe providen as input")
-    if club not in df[col_away_team].unique():
-        warnings.warn(f"{club} did not play away in the dataframe providen as input")
-    if (club not in df[col_home_team].unique()) and (club not in df[col_away_team].unique()):
-        raise AttributeError(f"{club} did not play in the dataframe providen as input")
+    if df.empty:
+        return -1 # if no matches were played, arbitrary value
     
     points_home = df[(df[col_home_team] == club) & ((df[col_final_result] == 'home') | (df[col_final_result] == 'draw'))]
     n_pts_home = (points_home[col_final_result] == 'home').sum() * 3 + (points_home[col_final_result] == 'draw').sum()
@@ -59,14 +53,9 @@ def goal_diff(df: pd.DataFrame,
 
     Returns:
         The goal difference of the club during the matches present in the dataframe df
-
     """
-    if club not in df['home'].unique():
-        warnings.warn(f"{club} did not play home in the dataframe providen as input")
-    if club not in df['away'].unique():
-        warnings.warn(f"{club} did not play away in the dataframe providen as input")
-    if (club not in df['home'].unique()) and (club not in df['away'].unique()):
-        raise AttributeError(f"{club} did not play in the dataframe providen as input")
+    if df.empty:
+        return -1 # if no matches were played, arbitrary value
         
     matches_home = df[df[col_home_team] == club]
     matches_away = df[df[col_away_team] == club]
@@ -74,13 +63,68 @@ def goal_diff(df: pd.DataFrame,
     goals_home_for = matches_home[nb_goals_home_column].sum()
     goals_home_against = matches_home[nb_goals_away_column].sum()
 
-    goals_away_for = matches_away[nb_goals_home_column].sum()
-    goals_away_against = matches_away[nb_goals_away_column].sum()
+    goals_away_for = matches_away[nb_goals_away_column].sum()
+    goals_away_against = matches_away[nb_goals_home_column].sum()
 
     goal_diff = goals_home_for + goals_away_for - goals_home_against - goals_away_against
 
     return goal_diff
 
+
+def ranking_table(df: pd.DataFrame,
+                  col_home_team='home',
+                  col_away_team='away',
+                  col_final_result='final_result',
+                  nb_goals_home_column='nb_goals_home',
+                  nb_goals_away_column='nb_goals_away') -> pd.DataFrame:
+    """
+    Args:
+        df: dataframe with the matches to consider
+        col_home_team: name of the column mentionning the home team
+        col_away_team: name of the column mentionning the away team
+        col_final_result: name of the column mentionning the categorical final result ('home' for home team victory, 'away' for away team victory, 'draw' otherwise)
+        nb_goals_home_column: name of the column providing the number of goals scored by home team
+        nb_goals_away_column: name of the column providing the number of goals scored by away team
+
+    Returns:
+        The table with the rankings of all teams present in the dataframe providen as input. The ranking is computed according to the number of points. In case of equality, the goal difference is taken into consideration
+    """
+    if df.empty:
+        return pd.DataFrame(columns=['team', 'points', 'goal_diff'])
+        
+    teams = pd.concat([df[col_home_team], df[col_away_team]]).unique()
+    table = pd.DataFrame({
+        'team': teams,
+        'points': [nb_points(df, t, col_home_team, col_away_team, col_final_result) for t in teams],
+        'goal_diff': [goal_diff(df, t, col_home_team, col_away_team, nb_goals_home_column, nb_goals_away_column) for t in teams]
+    })
+    return table.sort_values(by=['points', 'goal_diff'], ascending=False).reset_index(drop=True)
+
+
+def ranking_club(df: pd.DataFrame,
+                 club: str,
+                 col_home_team='home',
+                 col_away_team='away',
+                 col_final_result='final_result',
+                 nb_goals_home_column='nb_goals_home',
+                 nb_goals_away_column='nb_goals_away') -> int:
+    """
+    Args:
+        df: dataframe with the matches to consider
+        club: team to compute the goal difference
+        col_home_team: name of the column mentionning the home team
+        col_away_team: name of the column mentionning the away team
+        col_final_result: name of the column mentionning the categorical final result ('home' for home team victory, 'away' for away team victory, 'draw' otherwise)
+        nb_goals_home_column: name of the column providing the number of goals scored by home team
+        nb_goals_away_column: name of the column providing the number of goals scored by away team
+
+    Returns:
+        The ranking of the club providen as input. The ranking is computed according to the number of points. In case of equality, the goal difference is taken into consideration
+    """
+    table = ranking_table(df, col_home_team, col_away_team, col_final_result, nb_goals_home_column, nb_goals_away_column)
+    row = table.loc[table['team'] == club]
+    return int(row.index[0] + 1) if not row.empty else -1 # arbitrary value if no matches were played
+        
 
 class Preprocessing:
     """
