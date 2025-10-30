@@ -83,4 +83,29 @@ nb_goals_scored_away_team_away: 'current_season_nb_goals_scored_away_team_away'
 nb_goals_conceded_home_team_at_home: 'current_season_nb_goals_conceded_home_team_at_home'
 nb_goals_conceded_away_team_away: 'current_season_nb_goals_conceded_away_team_away'
 
+# Absolute recent form indicators
+abs_max_matches: 5
+
+abs_recent_nb_points_by_match_home_team: 'abs_recent_nb_points_by_match_home_team'
+abs_recent_nb_points_by_match_away_team: 'abs_recent_nb_points_by_match_away_team'
+
+abs_recent_nb_goals_scored_by_match_home_team: 'abs_recent_nb_goals_scored_by_match_home_team'
+abs_recent_nb_goals_scored_by_match_away_team: 'abs_recent_nb_goals_scored_by_match_away_team'
+
+abs_recent_nb_goals_conceded_by_match_home_team: 'abs_recent_nb_goals_conceded_by_match_home_team'
+abs_recent_nb_goals_conceded_by_match_away_team: 'abs_recent_nb_goals_conceded_by_match_away_team'
+
+abs_recent_goal_difference_home_team: 'abs_recent_goal_difference_home_team'
+abs_recent_goal_difference_away_team: 'abs_recent_goal_difference_away_team'
+
+abs_recent_ranking_home_team: 'abs_recent_ranking_home_team'
+abs_recent_ranking_away_team: 'abs_recent_ranking_away_team'
+
+
+
+
+
+
+
+
 

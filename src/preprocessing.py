@@ -158,6 +158,7 @@ class Preprocessing:
         df = self.df.copy()
         df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
 
+        # Initialization
         indicators = [self.config['nb_points_home_team'],
                       self.config['nb_points_away_team'],
                       self.config['general_ranking_home_team'],
@@ -180,9 +181,9 @@ class Preprocessing:
                       self.config['nb_goals_scored_away_team_away'],
                       self.config['nb_goals_conceded_home_team_at_home'],
                       self.config['nb_goals_conceded_away_team_away']]
-
+        
         for col in indicators:
-            df[col] = None # initialization
+            df[col] = None
 
         # Season loop
         for season, season_df in df.groupby(self.config['season_column'], sort=False):
@@ -233,7 +234,7 @@ class Preprocessing:
                 home_goals_conceded_at_home = self._goals_conceded(past_matches_home, home)
                 away_goals_conceded_away = self._goals_conceded(past_matches_away, away)
                 
-                # Attribution
+                # Assignment
                 df.at[i, self.config['nb_points_home_team']] = home_points
                 df.at[i, self.config['nb_points_away_team']] = away_points
                 df.at[i, self.config['general_ranking_home_team']] = home_rank
@@ -258,6 +259,109 @@ class Preprocessing:
                 df.at[i, self.config['nb_goals_conceded_away_team_away']] = away_goals_conceded_away
         
         return df
+
+    def computes_absolute_recent_form_indicators(self, max_matches: int=None):
+        """
+        Absolute: regardless of the teams played against 
+        Recent form: last matches on a same season
+        Absolute recent form indicators are therefore indicators related to the max_matches last matches
+            
+        Absolute recent form indicators computed by this method are the following:
+        - points averaged by match
+        - goals scored averaged by match
+        - goals conceded averaged by match
+        - goal difference on last matches
+        - ranking based on last matches
+        """
+        df = self.df.copy()
+        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
+
+        if max_matches is None:
+            max_matches = self.config['abs_max_matches']
+
+        # Initialization
+        indicators = [self.config['abs_recent_nb_points_by_match_home_team'],
+                      self.config['abs_recent_nb_points_by_match_away_team'],
+                      self.config['abs_recent_nb_goals_scored_by_match_home_team'],
+                      self.config['abs_recent_nb_goals_scored_by_match_away_team'],
+                      self.config['abs_recent_nb_goals_conceded_by_match_home_team'],
+                      self.config['abs_recent_nb_goals_conceded_by_match_away_team'],
+                      self.config['abs_recent_goal_difference_home_team'],
+                      self.config['abs_recent_goal_difference_away_team'],
+                      self.config['abs_recent_ranking_home_team'],
+                      self.config['abs_recent_ranking_away_team']]
+
+        for col in indicators:
+            df[col] = None
+
+        # Season loop
+        for season, season_df in df.groupby(self.config['season_column'], sort=False):
+            
+            for i, row in season_df.iterrows():
+                current_date = row[self.config['date_column']]
+                home_team = row[self.config['home_column']]
+                away_team = row[self.config['away_column']]
+                
+                # Filtrating on the last matches of home and away teams
+                past_home_matches = season_df[(season_df[self.config['date_column']] < current_date) &
+                                              ((season_df[self.config['home_column']] == home_team) | (season_df[self.config['away_column']] == home_team))]
+                past_home_matches = past_home_matches.tail(max_matches)
+                
+                past_away_matches = season_df[(season_df[self.config['date_column']] < current_date) &
+                                              ((season_df[self.config['home_column']] == away_team) | (season_df[self.config['away_column']] == away_team))]
+                past_away_matches = past_away_matches.tail(max_matches)
+                
+                # Number of points
+                avg_home_points = self._nb_points(past_home_matches, home_team) / len(past_home_matches) if len(past_home_matches) != 0 else -1
+                avg_away_points = self._nb_points(past_away_matches, away_team) / len(past_away_matches) if len(past_away_matches) != 0 else -1
+                
+                # Number of goals scored
+                avg_home_goals_scored = self._goals_scored(past_home_matches, home_team) / len(past_home_matches) if len(past_home_matches) != 0 else -1
+                avg_away_goals_scored = self._goals_scored(past_away_matches, away_team) / len(past_away_matches) if len(past_away_matches) != 0 else -1
+
+                # Number of goals conceded
+                avg_home_goals_conceded = self._goals_conceded(past_home_matches, home_team) / len(past_home_matches) if len(past_home_matches) != 0 else -1
+                avg_away_goals_conceded = self._goals_conceded(past_away_matches, away_team) / len(past_away_matches) if len(past_away_matches) != 0 else -1
+                
+                # Goal difference
+                home_goal_diff = self._goal_diff(past_home_matches, home_team)
+                away_goal_diff = self._goal_diff(past_away_matches, away_team)
+                
+                # Ranking
+                teams = pd.concat([season_df[self.config['home_column']], season_df[self.config['away_column']]]).unique()
+                ranking_table_df = pd.DataFrame({
+                    'team': teams,
+                    'points': [self._nb_points(season_df[(season_df[self.config['date_column']] < current_date) &
+                                                         ((season_df[self.config['home_column']] == t) | (season_df[self.config['away_column']] == t))].tail(max_matches), t) for t in teams],
+                    'goal_diff': [self._goal_diff(season_df[(season_df[self.config['date_column']] < current_date) &
+                                                            ((season_df[self.config['home_column']] == t) | (season_df[self.config['away_column']] == t))].tail(max_matches), t) for t in teams]
+                })
+                ranking_table_df = ranking_table_df.sort_values(by=['points', 'goal_diff'], ascending=False).reset_index(drop=True)
+
+                home_rank = ranking_table_df[ranking_table_df['team'] == home_team].index[0] + 1
+                away_rank = ranking_table_df[ranking_table_df['team'] == away_team].index[0] + 1
+                
+                # Assignment
+                df.at[i, self.config['abs_recent_nb_points_by_match_home_team']] = avg_home_points
+                df.at[i, self.config['abs_recent_nb_points_by_match_away_team']] = avg_away_points
+                df.at[i, self.config['abs_recent_nb_goals_scored_by_match_home_team']] = avg_home_goals_scored
+                df.at[i, self.config['abs_recent_nb_goals_scored_by_match_away_team']] = avg_away_goals_scored
+                df.at[i, self.config['abs_recent_nb_goals_conceded_by_match_home_team']] = avg_home_goals_conceded
+                df.at[i, self.config['abs_recent_nb_goals_conceded_by_match_away_team']] = avg_away_goals_conceded
+                df.at[i, self.config['abs_recent_goal_difference_home_team']] = home_goal_diff
+                df.at[i, self.config['abs_recent_goal_difference_away_team']] = away_goal_diff
+                df.at[i, self.config['abs_recent_ranking_home_team']] = home_rank
+                df.at[i, self.config['abs_recent_ranking_away_team']] = away_rank
+
+        return df
+                
+                
+
+            
+
+
+
+            
 
 
         
