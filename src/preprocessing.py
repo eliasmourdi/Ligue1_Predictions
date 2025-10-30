@@ -1,5 +1,5 @@
 import pandas as pd
-from utils import nb_points, goals_scored, goals_conceded, goal_diff, ranking_table, ranking_club
+from src.utils import nb_points, goals_scored, goals_conceded, goal_diff, ranking_table, ranking_club, attack_ranking_table, attack_ranking_club, defense_ranking_table, defense_ranking_club, home_ranking_table, home_ranking_club, away_ranking_table, away_ranking_club
         
 
 class Preprocessing:
@@ -66,7 +66,7 @@ class Preprocessing:
 
 
     def _goals_conceded(self, df, club):    
-        returns goals_conceded(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+        return goals_conceded(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
 
 
     def _goal_diff(self, df, club):
@@ -79,6 +79,38 @@ class Preprocessing:
 
     def _ranking_club(self, df, club):
         return ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _attack_ranking_table(self, df, club):
+        return attack_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _attack_ranking_club(self, df, club):
+        return attack_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _defense_ranking_table(self, df, club):
+        return defense_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _defense_ranking_club(self, df, club):
+        return defense_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _home_ranking_table(self, df, club):
+        return home_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _home_ranking_club(self, df, club):
+        return home_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _away_ranking_table(self, df, club):
+        return away_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _away_ranking_club(self, df, club):
+        return away_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
         
     
     def creation_betting_odd_variable(self) -> pd.DataFrame:
@@ -114,41 +146,46 @@ class Preprocessing:
         - number of points so far
         - general ranking so far
         - number of goals scored so far
+        - attack ranking so far
+        - defense ranking so far
         - number of goals conceded so far
         - goal difference so far
-        ...
+        - number of points taken at home by home team so far, number of points taken away by away team so far
+        - home ranking for home team so far, away ranking for away team so far
+        - number of goals scored at home by home team so far, number of goals scored away by away team so far
+        - number of goals conceded at home by home team so far, number of goals conceded away by away team so far
         """
         df = self.df.copy()
         df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
 
-        indicators = [self.config['nb_points_home_column'],
-                      self.config['nb_points_away_column'],
-                      self.config['general_ranking_home_column'],
-                      self.config['general_ranking_away_column'],
-                      self.config['nb_goals_scored_home_column'],
-                      self.config['nb_goals_scored_away_column'],
-                      self.config['nb_goals_conceded_home_column'],
-                      self.config['nb_goals_conceded_away_column'],
-                      self.config['goal_difference_home_column'],
-                      self.config['goal_difference_away_column'],
-                      self.config['attack_ranking_home_column'],
-                      self.config['attack_ranking_away_column'],
-                      self.config['defense_ranking_home_column'],
-                      self.config['defense_ranking_away_column'],
-                      self.config['nb_points_home_matches_column'],
-                      self.config['nb_points_away_matches_column'],
-                      self.config['home_ranking_column'],
-                      self.config['away_ranking_column'],
-                      self.config['nb_goals_scored_at_home_column'],
-                      self.config['nb_goals_scored_away_column'],
-                      self.config['nb_goals_conceded_at_home_column'],
-                      self.config['nb_goals_conceded_away_column']]
+        indicators = [self.config['nb_points_home_team'],
+                      self.config['nb_points_away_team'],
+                      self.config['general_ranking_home_team'],
+                      self.config['general_ranking_away_team'],
+                      self.config['nb_goals_scored_home_team'],
+                      self.config['nb_goals_scored_away_team'],
+                      self.config['nb_goals_conceded_home_team'],
+                      self.config['nb_goals_conceded_away_team'],
+                      self.config['goal_difference_home_team'],
+                      self.config['goal_difference_away_team'],
+                      self.config['attack_ranking_home_team'],
+                      self.config['attack_ranking_away_team'],
+                      self.config['defense_ranking_home_team'],
+                      self.config['defense_ranking_away_team'],
+                      self.config['nb_points_home_team_at_home'],
+                      self.config['nb_points_away_team_away'],
+                      self.config['home_team_ranking_at_home'],
+                      self.config['away_team_ranking_away'],
+                      self.config['nb_goals_scored_home_team_at_home'],
+                      self.config['nb_goals_scored_away_team_away'],
+                      self.config['nb_goals_conceded_home_team_at_home'],
+                      self.config['nb_goals_conceded_away_team_away']]
 
         for col in indicators:
             df[col] = None # initialization
 
         # Season loop
-        for season, season_df in df.groupby(self.season_column, sort=False):
+        for season, season_df in df.groupby(self.config['season_column'], sort=False):
             
             for i, row in season_df.iterrows():
                 past_matches = season_df.loc[season_df[self.config['date_column']] < row[self.config['date_column']]]
@@ -170,22 +207,56 @@ class Preprocessing:
                 away_diff = self._goal_diff(past_matches, away)
             
                 # Rankings
-                table = self._ranking_table(past_matches)
                 home_rank = self._ranking_club(past_matches, home)
                 away_rank = self._ranking_club(past_matches, away)
 
-                # Attribution
-                df.at[i, self.config['nb_points_home_column']] = home_points
-                df.at[i, self.config['nb_points_away_column']] = away_points
-                df.at[i, self.config['general_ranking_home_column']] = home_rank
-                df.at[i, self.config['general_ranking_away_column']] = away_rank
-                df.at[i, self.config['nb_goals_scored_home_column']] = home_goals_for
-                df.at[i, self.config['nb_goals_scored_away_column']] = away_goals_for
-                df.at[i, self.config['nb_goals_conceded_home_column']] = home_goals_against
-                df.at[i, self.config['nb_goals_conceded_away_column']] = away_goals_against
-                df.at[i, self.config['goal_difference_home_column']] = home_diff
-                df.at[i, self.config['goal_difference_away_column']] = away_diff
+                home_rank_at_home = self._home_ranking_club(past_matches, home)
+                away_rank_away = self._away_ranking_club(past_matches, away)
 
+                home_attack_rank = self._attack_ranking_club(past_matches, home)
+                home_defense_rank = self._defense_ranking_club(past_matches, home)
+
+                away_attack_rank = self._attack_ranking_club(past_matches, away)
+                away_defense_rank = self._defense_ranking_club(past_matches, away)
+
+
+                # Home / Away specific indicators
+                past_matches_home = past_matches[past_matches[self.config['home_column']] == home]
+                past_matches_away = past_matches[past_matches[self.config['away_column']] == away]
+
+                home_points_at_home = self._nb_points(past_matches_home, home)
+                away_points_away = self._nb_points(past_matches_away, away)
+
+                home_goals_at_home = self._goals_scored(past_matches_home, home)
+                away_goals_away = self._goals_scored(past_matches_away, away)
+                
+                home_goals_conceded_at_home = self._goals_conceded(past_matches_home, home)
+                away_goals_conceded_away = self._goals_conceded(past_matches_away, away)
+                
+                # Attribution
+                df.at[i, self.config['nb_points_home_team']] = home_points
+                df.at[i, self.config['nb_points_away_team']] = away_points
+                df.at[i, self.config['general_ranking_home_team']] = home_rank
+                df.at[i, self.config['general_ranking_away_team']] = away_rank
+                df.at[i, self.config['nb_goals_scored_home_team']] = home_goals_for
+                df.at[i, self.config['nb_goals_scored_away_team']] = away_goals_for
+                df.at[i, self.config['nb_goals_conceded_home_team']] = home_goals_against
+                df.at[i, self.config['nb_goals_conceded_away_team']] = away_goals_against
+                df.at[i, self.config['goal_difference_home_team']] = home_diff
+                df.at[i, self.config['goal_difference_away_team']] = away_diff
+                df.at[i, self.config['attack_ranking_home_team']] = home_attack_rank
+                df.at[i, self.config['attack_ranking_away_team']] = away_attack_rank
+                df.at[i, self.config['defense_ranking_home_team']] = home_defense_rank
+                df.at[i, self.config['defense_ranking_away_team']] = away_defense_rank
+                df.at[i, self.config['nb_points_home_team_at_home']] = home_points_at_home
+                df.at[i, self.config['nb_points_away_team_away']] = away_points_away
+                df.at[i, self.config['home_team_ranking_at_home']] = home_rank_at_home
+                df.at[i, self.config['away_team_ranking_away']] = away_rank_away
+                df.at[i, self.config['nb_goals_scored_home_team_at_home']] = home_goals_at_home
+                df.at[i, self.config['nb_goals_scored_away_team_away']] = away_goals_away
+                df.at[i, self.config['nb_goals_conceded_home_team_at_home']] = home_goals_conceded_at_home
+                df.at[i, self.config['nb_goals_conceded_away_team_away']] = away_goals_conceded_away
+        
         return df
 
 
