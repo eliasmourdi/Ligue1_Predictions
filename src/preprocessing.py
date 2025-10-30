@@ -431,17 +431,115 @@ class Preprocessing:
             
         return df
 
-    
 
-    
-                
-
+    def computes_relative_recent_form_indicators(self, max_matches: int=None):
+        """
+        Relative: matches with teams playing each other
+        Recent form: last matches on a same season
+        Relative recent form indicators are therefore indicators related to the max_matches last matches confronting the two same teams
             
+        Relative recent form indicators computed by this method are the following:
+        - points averaged by match
+        - goals scored averaged by match
+        - goals conceded averaged by match
+        - goal difference on last matches
+        - % of win
+        """
+        df = self.df.copy()
+        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
 
+        if max_matches is None:
+            max_matches = self.config['rel_max_matches']
 
+        # Initialization
+        indicators = [self.config['rel_recent_nb_points_by_match_home_team'],
+                      self.config['rel_recent_nb_points_by_match_away_team'],
+                      self.config['rel_recent_nb_goals_scored_by_match_home_team'],
+                      self.config['rel_recent_nb_goals_scored_by_match_away_team'],
+                      self.config['rel_recent_nb_goals_conceded_by_match_home_team'],
+                      self.config['rel_recent_nb_goals_conceded_by_match_away_team'],
+                      self.config['rel_recent_goal_difference_home_team'],
+                      self.config['rel_recent_goal_difference_away_team'],
+                      self.config['rel_percentage_victory_home_team'],
+                      self.config['rel_percentage_victory_away_team']]
 
-            
+        for col in indicators:
+            df[col] = -1.0
 
+    
+        # Creation of a pair key column for each teams pair in chronological order (home away order not important here)
+        df['pair_key'] = df.apply(lambda x: tuple(sorted([x[self.config['home_column']], x[self.config['away_column']]])), axis=1)
+        grouped = df.groupby('pair_key', group_keys=False)
+
+        # Indicators computation
+        results = []
+
+        for pair, sub in grouped:
+            sub = sub.sort_values(by=self.config['date_column']).reset_index()
+            n = len(sub)
+            if n == 0:
+                continue
+
+            for i in range(n):
+                prev = sub.iloc[max(0, i - max_matches):i] # last matches between the two teams
+                if prev.empty:
+                    continue
+
+                row = sub.loc[i]
+                home = row[self.config['home_column']]
+                away = row[self.config['away_column']]
+                n_matches = len(prev)
+
+                # Number of points by match
+                home_pts_by_match = self._nb_points(prev, home) / n_matches if n_matches > 0 else - 1
+                away_pts_by_match = self._nb_points(prev, away) / n_matches if n_matches > 0 else -1
+
+                # Goals scored
+                home_goals_scored_by_match = self._goals_scored(prev, home) / n_matches if n_matches > 0 else -1
+                away_goals_scored_by_match = self._goals_scored(prev, away) / n_matches if n_matches > 0 else -1
+
+                # Goals conceded
+                home_goals_conceded_by_match = self._goals_conceded(prev, home) / n_matches if n_matches > 0 else -1
+                away_goals_conceded_by_match = self._goals_conceded(prev, away) / n_matches if n_matches > 0 else -1
+
+                # Goal difference
+                home_goal_diff = self._goal_diff(prev, home)
+                away_goal_diff = self._goal_diff(prev, away)
+
+                # Win percentage
+                home_perc_wins = len(prev[
+                                     ((prev[self.config['home_column']] == home) & (prev[self.config['final_result_column']] == 'home')) |
+                                     ((prev[self.config['away_column']] == home) & (prev[self.config['final_result_column']] == 'away'))
+                                     ]) / n_matches if n_matches > 0 else -1
+                away_perc_wins = len(prev[
+                                     ((prev[self.config['home_column']] == away) & (prev[self.config['final_result_column']] == 'home')) |
+                                     ((prev[self.config['away_column']] == away) & (prev[self.config['final_result_column']] == 'away'))
+                                     ]) / n_matches if n_matches > 0 else -1
+
+                # Assignment
+                results.append((
+                    row['index'],
+                    home_pts_by_match,
+                    away_pts_by_match,
+                    home_goals_scored_by_match,
+                    away_goals_scored_by_match,
+                    home_goals_conceded_by_match,
+                    away_goals_conceded_by_match,
+                    home_goal_diff,
+                    away_goal_diff,
+                    100 * home_perc_wins,
+                    100 * away_perc_wins
+                ))
+
+        # df update
+        if results:
+            res_df = pd.DataFrame(results, columns=['index']+indicators).set_index('index')
+            df.update(res_df)
+
+        # Deleting the temporary pair key
+        df.drop(columns=['pair_key'], inplace=True)
+
+        return df
 
         
 
