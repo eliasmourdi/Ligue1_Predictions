@@ -6,7 +6,7 @@
 raw_dir: 'data/raw'
 
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
 # 1) Cleaning
 # The aim of this section is to aggregate the raw imported dataframes into cleaned dataframes with the following columns:
 # - a date column, with the date of the match
@@ -14,7 +14,6 @@ raw_dir: 'data/raw'
 # - a home and an away column, with the teams involved in the match
 # - a columns indicating the number of goals scored by the home team, same for the away team
 # - a categorical column indicating the final result of the match ('home' for home team victory, 'away' for away team victory, or 'draw')
-# - columns with betting odds for home team victory, away team victory or draws for all bookmakers. Note that for each season, there may be different bookmakers mentionned in the different dataframes
 
 
 # Imported data information
@@ -38,10 +37,16 @@ cleaned_train_df_name: 'cleaned_df_train'
 cleaned_test_df_name: 'cleaned_df_test'
 
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------
 # 2) Preprocessing
-# The aim of this section is to create new columns necessary for modeling
-# ..... TODO for the description of new columns
+# The aim of this section is to create new columns necessary based on data we had at our disposal after cleaning
+# - columns with betting odds for home team victory, away team victory or draws, which are the averages of odds for all bookmakers
+# - current seasons indicators, based on the match season only: number of points, goals scored, goals conceded, goal difference, general ranking, attack and defense rankings,...
+# - absolute recent form indicators: indicators based on the last matches of a same season, regardless of the teams played against
+# - absolute historical form indicators: indicators based on the whole data
+# - relative recent form indicators: indicators based on the last matches played against the same team
+# - strict relative recent form indicators: same than previous category, but with the order home / away taken into consideration
+# - external factors which could impact a match issue (experience in the championship, promoted status or not,...)
 
 
 # Odd indicators
@@ -149,6 +154,22 @@ strict_rel_recent_goal_difference_away_team: 'strict_rel_recent_goal_difference_
 
 strict_rel_percentage_victory_home_team: 'strict_rel_percentage_victory_home_team'
 strict_rel_percentage_victory_away_team: 'strict_rel_percentage_victory_away_team'
+
+# External factors
+hist_nb_seasons_l1_home_team: 'hist_nb_seasons_l1_home_team'
+hist_nb_seasons_l1_away_team: 'hist_nb_seasons_l1_away_team'
+
+promoted_home_team: 'promoted_home_team'
+promoted_away_team: 'promoted_away_team'
+# TODO
+# european_matches_home_team: 'european_matches_home_team'
+# european_matches_away_team: 'european_matches_away_team'
+# travel_distance_away_team: 'travel_distance_away_team'
+
+# Dir to store dataframes after preprocessing
+preprocessed_dir: 'data/preprocessed'
+preprocessed_train_df_name: 'preprocessed_df_train'
+preprocessed_test_df_name: 'preprocessed_df_test'
 
 
 

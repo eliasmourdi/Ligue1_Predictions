@@ -1,5 +1,5 @@
 import pandas as pd
-from src.utils import nb_points, goals_scored, goals_conceded, goal_diff, ranking_table, ranking_club, attack_ranking_table, attack_ranking_club, defense_ranking_table, defense_ranking_club, home_ranking_table, home_ranking_club, away_ranking_table, away_ranking_club
+from src.utils import compute_team_stats, ranking_club, compute_home_away_stats, home_ranking_club, away_ranking_club, attack_ranking_club, defense_ranking_club
         
 
 class Preprocessing:
@@ -20,8 +20,12 @@ class Preprocessing:
 
     The preprocessing follows the steps detailed below:
     - creation of an aggregated variable with betting odds: one column for an aggregated betting odd variable for home tema victory, one column for away team victory, one column for draw
-    - .......
-    TODO FOR THE WHOLE DOCUMENTATION
+    - creation of current season indicators, based on matched played during the current season
+    - creation of absolute recent form indicators, based on the last matches played during the current season, regardless of the confronted teams
+    - creation of absolute historical form indicators, based on the entire imported data (several seasons)
+    - creation of relative recent form indicators, based on the last matches played against the same team
+    - creation of strict relative recent form indicators, based on the last matches played against the same team in the same stadium (home away order kept)
+    - creation of external factors which could impact a match issue
     """
     
     def __init__(self, df, config):
@@ -57,60 +61,80 @@ class Preprocessing:
             raise ValueError(f"There must be the same number of home, away and draw odds columns. There are currently {len(self.home_odds_columns)} home odds columns, {len(self.away_odds_columns)} away odds columns and {len(self.draw_odds_columns)} draw odds columns")
 
 
+    def _compute_team_stats(self, df):
+        return compute_team_stats(df, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
     def _nb_points(self, df, club):
-        return nb_points(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'])
+        """
+        Returns the total number of points won by 'club' in the matches of df
+        """
+        stats = self._compute_team_stats(df)
+        row = stats.loc[stats['team'] == club]
+        if not row.empty:
+            return int(row['points'].values[0])
+        else:
+            return -1
 
-    
+
     def _goals_scored(self, df, club):
-        return goals_scored(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+        """
+        Returns the total number of goals scored by 'club' in the matches of df
+        """
+        stats = self._compute_team_stats(df)
+        row = stats.loc[stats['team'] == club]
+        if not row.empty:
+            return int(row['goals_scored'].values[0])
+        else:
+            return -1
 
 
-    def _goals_conceded(self, df, club):    
-        return goals_conceded(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+    def _goals_conceded(self, df, club):
+        """
+        Returns the total number of goals conceded by 'club' in the matches of df
+        """
+        stats = self._compute_team_stats(df)
+        row = stats.loc[stats['team'] == club]
+        if not row.empty:
+            return int(row['goals_conceded'].values[0])
+        else:
+            return -1
 
 
     def _goal_diff(self, df, club):
-        return goal_diff(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
-    def _ranking_table(self, df, club):
-        return ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+        """
+        Returns the goal difference of 'club' in the matches of df
+        """
+        stats = self._compute_team_stats(df)
+        row = stats.loc[stats['team'] == club]
+        if not row.empty:
+            return int(row['goal_diff'].values[0])
+        else:
+            return -1
 
 
     def _ranking_club(self, df, club):
         return ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
 
 
-    def _attack_ranking_table(self, df, club):
-        return attack_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
-    def _attack_ranking_club(self, df, club):
-        return attack_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
-    def _defense_ranking_table(self, df, club):
-        return defense_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
-    def _defense_ranking_club(self, df, club):
-        return defense_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
-    def _home_ranking_table(self, df, club):
-        return home_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+    def _compute_home_away_stats(self, df, home=True):
+        return compute_home_away_stats(df, home, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
 
 
     def _home_ranking_club(self, df, club):
         return home_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
 
 
-    def _away_ranking_table(self, df, club):
-        return away_ranking_table(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
-
-
     def _away_ranking_club(self, df, club):
         return away_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['final_result_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _attack_ranking_club(self, df, club):
+        return attack_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
+
+
+    def _defense_ranking_club(self, df, club):
+        return defense_ranking_club(df, club, self.config['home_column'], self.config['away_column'], self.config['nb_goals_home_column'], self.config['nb_goals_away_column'])
         
     
     def creation_betting_odd_variable(self) -> pd.DataFrame:
@@ -407,17 +431,17 @@ class Preprocessing:
                 continue
 
             # Indicators computation
-            home_points_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._nb_points(x, home_team)).mean()
-            away_points_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._nb_points(x, away_team)).mean()
+            home_points_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._nb_points(x, home_team)).mean()
+            away_points_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._nb_points(x, away_team)).mean()
 
-            home_goals_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_scored(x, home_team)).mean()
-            away_goals_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_scored(x, away_team)).mean()
+            home_goals_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._goals_scored(x, home_team)).mean()
+            away_goals_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._goals_scored(x, away_team)).mean()
 
-            home_conceded_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_conceded(x, home_team)).mean()
-            away_conceded_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._goals_conceded(x, away_team)).mean()
+            home_conceded_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._goals_conceded(x, home_team)).mean()
+            away_conceded_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._goals_conceded(x, away_team)).mean()
 
-            home_rank_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._ranking_club(x, home_team)).mean()
-            away_rank_avg = past_seasons.groupby(self.config['season_column']).apply(lambda x: self._ranking_club(x, away_team)).mean()
+            home_rank_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._ranking_club(x, home_team)).mean()
+            away_rank_avg = past_seasons.drop(columns=[self.config['season_column']]).groupby(past_seasons[self.config['season_column']]).apply(lambda x: self._ranking_club(x, away_team)).mean()
 
             # Assignment
             df.at[i, self.config['abs_hist_nb_points_by_season_home_team']] = home_points_avg
@@ -651,13 +675,90 @@ class Preprocessing:
         df.drop(columns=['pair_key'], inplace=True)
 
         return df
+
+
+    def computes_ext_factors(self):
+        """
+        Computes external factors which could imapct a match issue
+
+        Computed indicators here are the following:
+        - number of seasons in L1 based on historical data (more experience in the championship)
+        - boolean if the club has been promoted last season (less experience in the championship)
+        - indicator highlighting the potential tiredness of clubs playing european competitions with matches during the week (TODO)
+        - travel distance of clubs playing away (TODO)
+        """
+        df = self.df.copy()
+        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
+
+        # Number of seasons
+        df[self.config['hist_nb_seasons_l1_home_team']] = df[self.config['home_column']].map(df.groupby(self.config['home_column'])[self.config['season_column']].nunique())
+        df[self.config['hist_nb_seasons_l1_away_team']] = df[self.config['away_column']].map(df.groupby(self.config['away_column'])[self.config['season_column']].nunique())
+
+        # Promoted or not? A promoted club is a club playing in Ligue 1 a season N while not having played in Ligue 1 at season N-1
+        df['season_start_year'] = df[self.config['season_column']].str.split('/').str[0].astype(int)
         
+        clubs_presence = set((club, season) for club, season in zip(df[self.config['home_column']], df['season_start_year'])) # couples (club, year of presence)
+        def is_promoted(row, club_col): # club_col: home or away column
+            if row['season_start_year'] == df['season_start_year'].min():
+                return 0  # first season of the historical data: 0 for all clubs
+            return int((row[club_col], row['season_start_year']-1) not in clubs_presence)
 
+        df[self.config['promoted_home_team']] = df.apply(lambda row: is_promoted(row, self.config['home_column']), axis=1)
+        df[self.config['promoted_away_team']] = df.apply(lambda row: is_promoted(row, self.config['away_column']), axis=1)
+        df.drop(columns=['season_start_year'], inplace=True)
+
+        return df
+
+
+    def run_preprocessing_pipeline(self):
+        """
+        Runs all the preprocessing pipeline:
+        - computes betting odds variables
+        - computes current season indicators
+        - computes absolute recent form indicators
+        - computes absolute historical form indicators
+        - computes relative recent form indicators
+        - computes strict relative recent form indicators
+        - computes external factor indicators
+        """
+        df = self.df.copy()
+        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
+
+        # Bettings odd variables
+        print("Phase 1: creation of betting odd variables")
+        self.df = self.creation_betting_odd_variable()
+        print("Phase 1 OK \n")
+
+        # Current season indicators
+        print("Phase 2: creation of current season indicators")
+        self.df = self.computes_current_season_indicators()
+        print("Phase 2 OK \n")
+
+        # Absolute recent form indicators
+        print("Phase 3: creation of absolute recent form indicators")
+        self.df = self.computes_absolute_recent_form_indicators()
+        print("Phase 3 OK \n")
+
+        # Absolute historical form indicators
+        print("Phase 4: creation of absolute historical form indicators")
+        self.df = self.computes_absolute_historical_form_indicators()
+        print("Phase 4 OK \n")
+
+        # Relative recent form indicators
+        print("Phase 5: creation of relative recent form indicators")
+        self.df = self.computes_relative_recent_form_indicators()
+        print("Phase 5 OK \n")
+
+        # Strict relative recent form indicators
+        print("Phase 6: creation of strict relative recent form indicators")
+        self.df = self.computes_strict_relative_recent_form_indicators()
+        print("Phase 6 OK \n")
+
+        # External factors
+        print("Phase 7: creation of external factor indicators")
+        self.df = self.computes_ext_factors()
+        print("Phase 7 OK \n")
+
+        print("Preprocessing OK \n")
         
-        
-
-        
-
-
-
-
+        return self.df
