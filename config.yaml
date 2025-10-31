@@ -134,8 +134,8 @@ rel_recent_nb_goals_conceded_by_match_away_team: 'rel_recent_nb_goals_conceded_b
 rel_recent_goal_difference_home_team: 'rel_recent_goal_difference_home_team'
 rel_recent_goal_difference_away_team: 'rel_recent_goal_difference_away_team'
 
-rel_percentage_victory_home_team: 'rel_percentage_victory_home_team'
-rel_percentage_victory_away_team: 'rel_percentage_victory_away_team'
+rel_percentage_victory_home_team: 'rel_recent_percentage_victory_home_team'
+rel_percentage_victory_away_team: 'rel_recent_percentage_victory_away_team'
 
 # Strict relative recent form indicators
 strict_rel_max_matches: 5
@@ -152,8 +152,8 @@ strict_rel_recent_nb_goals_conceded_by_match_away_team: 'strict_rel_recent_nb_go
 strict_rel_recent_goal_difference_home_team: 'strict_rel_recent_goal_difference_home_team'
 strict_rel_recent_goal_difference_away_team: 'strict_rel_recent_goal_difference_away_team'
 
-strict_rel_percentage_victory_home_team: 'strict_rel_percentage_victory_home_team'
-strict_rel_percentage_victory_away_team: 'strict_rel_percentage_victory_away_team'
+strict_rel_percentage_victory_home_team: 'strict_rel_recent_percentage_victory_home_team'
+strict_rel_percentage_victory_away_team: 'strict_rel_recent_percentage_victory_away_team'
 
 # External factors
 hist_nb_seasons_l1_home_team: 'hist_nb_seasons_l1_home_team'
@@ -170,10 +170,3 @@ promoted_away_team: 'promoted_away_team'
 preprocessed_dir: 'data/preprocessed'
 preprocessed_train_df_name: 'preprocessed_df_train'
 preprocessed_test_df_name: 'preprocessed_df_test'
-
-
-
-
-
-
-
