@@ -117,7 +117,7 @@ abs_hist_nb_goals_conceded_by_season_home_team: 'abs_hist_nb_goals_conceded_by_s
 abs_hist_nb_goals_conceded_by_season_away_team: 'abs_hist_nb_goals_conceded_by_season_away_team'
 
 abs_hist_ranking_by_season_home_team: 'abs_hist_ranking_by_season_home_team'
-abs_hist_ranking_by_season_away_team: 'abs_recent_ranking_by_season_away_team'
+abs_hist_ranking_by_season_away_team: 'abs_hist_ranking_by_season_away_team'
 
 # Relative recent form indicators
 rel_max_matches: 5
@@ -170,3 +170,49 @@ promoted_away_team: 'promoted_away_team'
 preprocessed_dir: 'data/preprocessed'
 preprocessed_train_df_name: 'preprocessed_df_train'
 preprocessed_test_df_name: 'preprocessed_df_test'
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 4a) Primary model
+# Primary model is the prediction of the final result (home / draw / away)
+# The aim of this section is to define parameters needed for modeling (related to notebook 4a)
+# Three classifiers are tested: logistic regression, random forest, XGBoost
+
+# Grid Search hyperparameter grids
+# Logistic regression
+param_grid_lr:
+    penalty: ['l2', 'l1', 'elasticnet']
+    C: [0.01, 0.1, 1, 5, 10]
+    l1_ratio: [0.0, 0.15, 0.5]
+    class_weight: [None, 'balanced']
+
+# Random forest
+param_grid_rf:
+    n_estimators: [100, 300, 600]
+    max_depth: [None, 6, 10, 20]
+    min_samples_split: [2, 5, 10]
+    min_samples_leaf: [1, 2, 4]
+    max_features: ['sqrt', 'log2', 0.5]
+    class_weight: [None, 'balanced']
+
+# XGBoost
+param_grid_xgb:
+    n_estimators: [100, 300, 600]
+    max_depth: [3, 5, 7, 10]
+    learning_rate: [0.01, 0.05, 0.1]
+    subsample: [0.6, 0.8, 1.0]
+    colsample_bytree: [0.5, 0.8, 1.0]
+    reg_alpha: [0, 0.5, 1]
+    reg_lambda: [1, 3, 5]
+
+
+# Models export
+primary_models_dir: 'models/primary'
+
+
+
+
+
+
+
+
