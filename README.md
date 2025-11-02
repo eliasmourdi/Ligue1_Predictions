@@ -2,25 +2,25 @@
 
 Welcome to this project focused on predicting the outcomes of Ligue 1 football matches using data science techniques.
 
-## Project objectives
+# Project objectives
 
 - Collect, clean and aggregate Ligue 1 match data across multiple seasons
-- Build a structured and reproducible data processing pipeline
+- Build a structured and reproducible data preprocessing pipeline
 - Perform feature engineering to extract meaningful insights from raw match data
 - Train and evaluate machine learning models to predict match results
-- Visualize predictions interactively to improve the model
+- Improve the models from model results insights
 
-## To-do list
+# How to use this repo?
 
-- Achieve utils.py (with ranking per category functions)
-- Create modeling files
-- Create a visualization pipeline for post processing and model calibration
-- Refactor and organize code (group functions into classes, DAG-style logic)
-- Write a tutorial for running all the code
+Before all the steps below, you can create a virtual environment from the requirements.txt file in the root of this repo.
 
+After setting up the environment, you can run the entire pipeline, from cleaning to modeling. The project workflow is organized into notebooks located in the notebooks directory:
+- 01-cleaning notebook: clean raw data (remove unnecessary columns, rename columns/values). Input is therefore raw data files, output is cleaned dataframes.
+- 02-preprocessing notebook: generate features/indicators for predictions, such as team performance in recent matches and head-to-head history. More details about created indicators in this section are in the Preprocessing class documentation or in the config.yaml file.
+- 03-data_analysis notebook: explore data distributions, correlations, and insights.
+- 04a-primary_modeling notebook: train ML models to predict match outcomes (multiclass: home win, away win, draw).
+- 04b-secondary_modeling notebook: train ML models to predict exact scores based on primary outcome predictions.
 
-   ### BROUILLON de doc
+Each notebook is based on the config.yaml file for project-specific settings. These notebooks also rely on utility py files, located in the src directory.
 
-  Faire un DAG pour que ce soit plus clair
-
-  1) cleaning : on ne garde que les colonnes de date, les équipes, les buts marqués, le résultat final et les côtes des différents bookmarkers. Il suffit de run le notebook et ça nous met les df train et test dans le bon dossier. Une saison pour le test, tout le reste pour le train.
+After that, ML models dedicated to predict Ligue 1 match scores will be stored in specific directories indicated in the config.yaml file.
