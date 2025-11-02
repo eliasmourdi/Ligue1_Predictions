@@ -12,7 +12,7 @@ class ClubAnalysis:
         self.club = club_name
         self.config = config
 
-        if (self.club not in self.df[self.config['home_column']]) or (self.club not in self.df[self.config['away_column']]):
+        if (self.club not in self.df[self.config['home_column']].unique()) or (self.club not in self.df[self.config['away_column']].unique()):
             raise AttributeError(f"{self.club} not in the providen dataframe")
 
         if ('home_points' not in self.df.columns) and ('away_points' not in self.df.columns):
