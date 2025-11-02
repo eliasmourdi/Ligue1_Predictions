@@ -4,3 +4,6 @@ numpy
 pandas
 seaborn
 adjustText
+optuna
+scikit-learn
+xgboost
