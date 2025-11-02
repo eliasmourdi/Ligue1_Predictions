@@ -207,7 +207,7 @@ param_grid_xgb:
 
 
 # Models export
-primary_models_dir: 'models/primary/grid_search'
+primary_models_dir: 'models/primary'
 
 
 
