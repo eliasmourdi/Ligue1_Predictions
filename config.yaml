@@ -117,7 +117,7 @@ abs_hist_nb_goals_conceded_by_season_home_team: 'abs_hist_nb_goals_conceded_by_s
 abs_hist_nb_goals_conceded_by_season_away_team: 'abs_hist_nb_goals_conceded_by_season_away_team'
 
 abs_hist_ranking_by_season_home_team: 'abs_hist_ranking_by_season_home_team'
-abs_hist_ranking_by_season_away_team: 'abs_recent_ranking_by_season_away_team'
+abs_hist_ranking_by_season_away_team: 'abs_hist_ranking_by_season_away_team'
 
 # Relative recent form indicators
 rel_max_matches: 5
