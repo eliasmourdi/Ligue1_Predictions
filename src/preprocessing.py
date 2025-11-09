@@ -682,7 +682,7 @@ class Preprocessing:
         Computes external factors which could imapct a match issue
 
         Computed indicators here are the following:
-        - number of seasons in L1 based on historical data (more experience in the championship)
+        - number of past seasons in L1 based on historical data (more experience in the championship)
         - boolean if the club has been promoted last season (less experience in the championship)
         - indicator highlighting the potential tiredness of clubs playing european competitions with matches during the week (TODO)
         - travel distance of clubs playing away (TODO)
@@ -690,13 +690,18 @@ class Preprocessing:
         df = self.df.copy()
         df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
 
-        # Number of seasons
-        df[self.config['hist_nb_seasons_l1_home_team']] = df[self.config['home_column']].map(df.groupby(self.config['home_column'])[self.config['season_column']].nunique())
-        df[self.config['hist_nb_seasons_l1_away_team']] = df[self.config['away_column']].map(df.groupby(self.config['away_column'])[self.config['season_column']].nunique())
+        # Util feature: season start year (e.g. 2014 for 2014/2015)
+        df['season_start_year'] = df[self.config['season_column']].str.split('/').str[0].astype(int)
+
+        # Number of seasons before the current one
+        def nb_past_seasons(row, club_col):
+            past_seasons = df[(df[club_col] == row[club_col]) & (df['season_start_year'] < row['season_start_year'])][self.config['season_column']].nunique()
+            return past_seasons
+
+        df[self.config['hist_nb_seasons_l1_home_team']] = df.apply(lambda row: nb_past_seasons(row, self.config['home_column']), axis=1)
+        df[self.config['hist_nb_seasons_l1_away_team']] = df.apply(lambda row: nb_past_seasons(row, self.config['away_column']), axis=1)
 
         # Promoted or not? A promoted club is a club playing in Ligue 1 a season N while not having played in Ligue 1 at season N-1
-        df['season_start_year'] = df[self.config['season_column']].str.split('/').str[0].astype(int)
-        
         clubs_presence = set((club, season) for club, season in zip(df[self.config['home_column']], df['season_start_year'])) # couples (club, year of presence)
         def is_promoted(row, club_col): # club_col: home or away column
             if row['season_start_year'] == df['season_start_year'].min():
@@ -721,8 +726,7 @@ class Preprocessing:
         - computes strict relative recent form indicators
         - computes external factor indicators
         """
-        df = self.df.copy()
-        df = df.sort_values(by=self.config['date_column']).reset_index(drop=True)
+        self.df = self.df.sort_values(by=self.config['date_column']).reset_index(drop=True)
 
         # Bettings odd variables
         print("Phase 1: creation of betting odd variables")

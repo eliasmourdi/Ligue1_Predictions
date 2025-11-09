@@ -103,11 +103,6 @@ def run_grid_searches(X, y, param_grid_lr, param_grid_rf, param_grid_xgb, prepro
     return results
 
 
-# Optuna: TODO
-
-
-
-
 def load_model(path):
     """
     Loads a joblib file
