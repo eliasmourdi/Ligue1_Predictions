@@ -18,8 +18,7 @@ After setting up the environment, you can run the entire pipeline, from cleaning
 - 01-cleaning notebook: clean raw data (remove unnecessary columns, rename columns/values). Input is therefore raw data files, output is cleaned dataframes.
 - 02-preprocessing notebook: generate features/indicators for predictions, such as team performance in recent matches and head-to-head history. More details about created indicators in this section are in the Preprocessing class documentation or in the config.yaml file.
 - 03-data_analysis notebook: explore data distributions, correlations, and insights.
-- 04a-primary_modeling notebook: train ML models to predict match outcomes (multiclass: home win, away win, draw).
-- 04b-secondary_modeling notebook: train ML models to predict exact scores based on primary outcome predictions.
+- 04-modeling notebook: train 2 ML models. First, a primary model to predict match issues (home, draw, away). Knowing these issue probabilities, secondary models aim at predicting the number of goals scored by each team.
 
 Each notebook is based on the config.yaml file for project-specific settings. These notebooks also rely on utility py files, located in the src directory.
 
