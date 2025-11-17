@@ -9,3 +9,4 @@ scikit-learn
 xgboost
 panel
 ipywidgets
+hvplot
