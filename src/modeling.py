@@ -7,7 +7,7 @@ from sklearn.model_selection import StratifiedKFold, KFold, GridSearchCV, cross_
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, mean_absolute_error, mean_squared_error, r2_score
 from sklearn.linear_model import LogisticRegression, PoissonRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from xgboost import XGBClassifier, XGBRegressor
@@ -141,4 +141,24 @@ def evaluate_model_metrics(model, X_test, y_test, plot_confusion=False):
         plt.title("Confusion Matrix")
         plt.show()
     
+    return metrics
+
+
+def evaluate_regression_model(model, X_test, y_test):
+    """
+    Evaluates a regression model and returns MAE, RMSE, MSE, R2.
+    """
+    y_pred = model.predict(X_test)
+
+    metrics = {
+        "MAE": mean_absolute_error(y_test, y_pred),
+        "MSE": mean_squared_error(y_test, y_pred),
+        "RMSE": np.sqrt(mean_squared_error(y_test, y_pred)),
+        "R2": r2_score(y_test, y_pred)
+    }
+
+    print("Regression Evaluation Metrics:")
+    for k, v in metrics.items():
+        print(f"{k}: {v:.4f}")
+
     return metrics
