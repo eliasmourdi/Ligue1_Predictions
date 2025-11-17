@@ -29,13 +29,11 @@ def _save_model(model, path):
 
 
 # GridSearch implementations
-# Logistic regression
-def grid_logistic(X, y, param_grid, preprocessing_pipeline, cv=None, n_jobs=-1, verbose=2):
-    """Grid search for logistic regression (multinomial)"""
+def run_grid_search(X, y, param_grid, preprocessing_pipeline, cv=None, n_jobs=-1, verbose=2):
+    """Grid Search according to a param grid and a preprocessing pipeline."""
     if cv is None:
         cv = _make_cv()
 
-    # grid: C, penalty, l1_ratio only relevant if elasticnet
     new_grid = {}
     for key, value in param_grid.items():
         if not key.startswith('clf'):
@@ -46,60 +44,57 @@ def grid_logistic(X, y, param_grid, preprocessing_pipeline, cv=None, n_jobs=-1, 
     gs = GridSearchCV(preprocessing_pipeline, new_grid, scoring='f1_macro', cv=cv, n_jobs=n_jobs, verbose=verbose)
     gs.fit(X, y)
     print("Best logistic params:", gs.best_params_, "best f1_macro:", gs.best_score_)
-    return gs
+    return gs    
 
 
-# Random forest
-def grid_random_forest(X, y, param_grid, preprocessing_pipeline, cv=None, n_jobs=-1, verbose=2):
-    if cv is None:
-        cv = _make_cv()
-
-    new_grid = {}
-    for key, value in param_grid.items():
-        if not key.startswith('clf'):
-            new_grid[f"clf__{key}"] = value
-        else:
-            new_grid[key] = value
-
-    gs = GridSearchCV(preprocessing_pipeline, new_grid, scoring='f1_macro', cv=cv, n_jobs=n_jobs, verbose=verbose)
-    gs.fit(X, y)
-    print("Best RF params:", gs.best_params_, "best f1_macro:", gs.best_score_)
-    return gs
-
-
-# XGBoost
-def grid_xgboost(X, y, param_grid, preprocessing_pipeline, cv=None, n_jobs=-1, verbose=2):
-    if cv is None:
-        cv = _make_cv()
-
-    new_grid = {}
-    for key, value in param_grid.items():
-        if not key.startswith('clf'):
-            new_grid[f"clf__{key}"] = value
-        else:
-            new_grid[key] = value
-
-    gs = GridSearchCV(preprocessing_pipeline, new_grid, scoring='f1_macro', cv=cv, n_jobs=n_jobs, verbose=verbose)
-    gs.fit(X, y)
-    print("Best XGB params:", gs.best_params_, "best f1_macro:", gs.best_score_)
-    return gs
-
-
-def run_grid_searches(X, y, param_grid_lr, param_grid_rf, param_grid_xgb, preprocessing_pipeline_lr, preprocessing_pipeline_rf, preprocessing_pipeline_xgb, outdir, cv_splits=5, n_jobs=-1):
+def run_primary_modeling(X, y, param_grid_lr, param_grid_rf, param_grid_xgb, preprocessing_pipeline_lr, preprocessing_pipeline_rf, preprocessing_pipeline_xgb, outdir, cv_splits=5, n_jobs=-1):
     cv = _make_cv(n_splits=cv_splits)
     results = {}
     # Logistic regression
-    results['logistic'] = grid_logistic(X, y, param_grid_lr, preprocessing_pipeline_lr, cv=cv, n_jobs=n_jobs)
-    _save_model(results['logistic'].best_estimator_, os.path.join('..', outdir, 'logistic_grid.joblib'))
+    results['logistic'] = run_grid_search(X, y, param_grid_lr, preprocessing_pipeline_lr, cv=cv, n_jobs=n_jobs)
+    _save_model(results['logistic'].best_estimator_, os.path.join('..', outdir, 'logistic.joblib'))
 
     # Random forest
-    results['rf'] = grid_random_forest(X, y, param_grid_rf, preprocessing_pipeline_rf, cv=cv, n_jobs=n_jobs)
-    _save_model(results['rf'].best_estimator_, os.path.join('..', outdir, 'rf_grid.joblib'))
+    results['rf'] = run_grid_search(X, y, param_grid_rf, preprocessing_pipeline_rf, cv=cv, n_jobs=n_jobs)
+    _save_model(results['rf'].best_estimator_, os.path.join('..', outdir, 'rf.joblib'))
 
     # XGBoost
-    results['xgb'] = grid_xgboost(X, y, param_grid_xgb, preprocessing_pipeline_xgb, cv=cv, n_jobs=n_jobs)
-    _save_model(results['xgb'].best_estimator_, os.path.join('..', outdir, 'xgb_grid.joblib'))
+    results['xgb'] = run_grid_search(X, y, param_grid_xgb, preprocessing_pipeline_xgb, cv=cv, n_jobs=n_jobs)
+    _save_model(results['xgb'].best_estimator_, os.path.join('..', outdir, 'xgb.joblib'))
 
+    return results
+
+
+def run_secondary_modeling(X_home, y_home, X_away, y_away, param_grid_poisson, param_grid_rf, param_grid_xgb, preprocessing_pipeline_poisson, preprocessing_pipeline_rf, preprocessing_pipeline_xgb, outdir, cv_splits=5, n_jobs=-1):
+    cv = _make_cv(n_splits=cv_splits)
+    results = {}
+    # Poisson regression
+    # Home
+    results['home_poisson'] = run_grid_search(X_home, y_home, param_grid_poisson, preprocessing_pipeline_poisson, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_poisson'].best_estimator_, os.path.join('..', outdir, 'home_poisson.joblib'))
+
+    # Away
+    results['away_poisson'] = run_grid_search(X_home, y_home, param_grid_poisson, preprocessing_pipeline_poisson, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_poisson'].best_estimator_, os.path.join('..', outdir, 'away_poisson.joblib'))
+    
+    # Random forest
+    # Home
+    results['home_rf'] = run_grid_search(X_home, y_home, param_grid_rf, preprocessing_pipeline_rf, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_rf'].best_estimator_, os.path.join('..', outdir, 'home_rf.joblib'))
+
+    # Away
+    results['away_rf'] = run_grid_search(X_away, y_away, param_grid_rf, preprocessing_pipeline_rf, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_rf'].best_estimator_, os.path.join('..', outdir, 'away_rf.joblib'))
+    
+    # XGBoost
+    # Home
+    results['home_xgb'] = run_grid_search(X_home, y_home, param_grid_xgb, preprocessing_pipeline_xgb, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_xgb'].best_estimator_, os.path.join('..', outdir, 'home_xgb.joblib'))
+
+    # Away
+    results['away_xgb'] = run_grid_search(X_away, y_away, param_grid_xgb, preprocessing_pipeline_xgb, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_xgb'].best_estimator_, os.path.join('..', outdir, 'away_xgb.joblib'))
+    
     return results
 
 
