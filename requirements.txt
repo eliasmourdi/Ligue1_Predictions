@@ -8,4 +8,4 @@ optuna
 scikit-learn
 xgboost
 panel
-voila
+ipywidgets
