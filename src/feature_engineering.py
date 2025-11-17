@@ -25,8 +25,8 @@ def create_diff_features(df: pd.DataFrame, patterns: list[tuple[str, str]], drop
         home_cols = [c for c in df.columns if c.endswith(home_suffix)]
 
         for home_col in home_cols:
-            # Odds columns can be ignored
-            if "odd" in home_col.lower():
+            # Odds columns can be ignored, and we avoid duplicates
+            if home_col in paired_cols or "odd" in home_col.lower():
                 continue
 
             away_col = home_col.replace(home_suffix, away_suffix)

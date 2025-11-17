@@ -1,0 +1,164 @@
+import os
+import joblib
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import StratifiedKFold, KFold, GridSearchCV, cross_val_score, train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, mean_absolute_error, mean_squared_error, r2_score
+from sklearn.linear_model import LogisticRegression, PoissonRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from xgboost import XGBClassifier, XGBRegressor
+
+from sklearn.metrics import make_scorer, f1_score, accuracy_score, log_loss
+import optuna
+from optuna.samplers import TPESampler
+
+
+# Utilities
+def _make_cv(n_splits=5, random_state=42):
+    return StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+
+
+def _make_cv_reg(n_splits=5, random_state=42):
+    return KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+
+
+def _save_model(model, path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    joblib.dump(model, path)
+    print(f"Model saved to {path}")
+
+
+# GridSearch implementations
+def run_grid_search(X, y, param_grid, preprocessing_pipeline, scoring='f1_macro', cv=None, n_jobs=-1, verbose=2):
+    """Grid Search according to a param grid and a preprocessing pipeline."""
+    if cv is None:
+        cv = _make_cv()
+
+    new_grid = {}
+    for key, value in param_grid.items():
+        if not key.startswith('clf'):
+            new_grid[f"clf__{key}"] = value
+        else:
+            new_grid[key] = value
+
+    gs = GridSearchCV(preprocessing_pipeline, new_grid, scoring=scoring, cv=cv, n_jobs=n_jobs, verbose=verbose)
+    gs.fit(X, y)
+    print("Best params:", gs.best_params_, f"best {scoring}:", gs.best_score_)
+    return gs    
+
+
+def run_primary_modeling(X, y, param_grid_lr, param_grid_rf, param_grid_xgb, preprocessing_pipeline_lr, preprocessing_pipeline_rf, preprocessing_pipeline_xgb, outdir, scoring='f1_macro', cv_splits=5, n_jobs=-1):
+                        
+    cv = _make_cv(n_splits=cv_splits)
+    results = {}
+    # Logistic regression
+    results['logistic'] = run_grid_search(X, y, param_grid_lr, preprocessing_pipeline_lr, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['logistic'].best_estimator_, os.path.join('..', outdir, 'logistic.joblib'))
+
+    # Random forest
+    results['rf'] = run_grid_search(X, y, param_grid_rf, preprocessing_pipeline_rf, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['rf'].best_estimator_, os.path.join('..', outdir, 'rf.joblib'))
+
+    # XGBoost
+    results['xgb'] = run_grid_search(X, y, param_grid_xgb, preprocessing_pipeline_xgb, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['xgb'].best_estimator_, os.path.join('..', outdir, 'xgb.joblib'))
+
+    return results
+
+
+def run_secondary_modeling(X_home, y_home, X_away, y_away, param_grid_poisson, param_grid_rf, param_grid_xgb, preprocessing_pipeline_poisson_home, preprocessing_pipeline_poisson_away, preprocessing_pipeline_rf_home, preprocessing_pipeline_rf_away, preprocessing_pipeline_xgb_home, preprocessing_pipeline_xgb_away, outdir, scoring='neg_mean_absolute_error', cv_splits=5, n_jobs=-1):
+    
+    cv = _make_cv_reg(n_splits=cv_splits)
+    results = {}
+    # Poisson regression
+    # Home
+    results['home_poisson'] = run_grid_search(X_home, y_home, param_grid_poisson, preprocessing_pipeline_poisson_home, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_poisson'].best_estimator_, os.path.join('..', outdir, 'home_poisson.joblib'))
+
+    # Away
+    results['away_poisson'] = run_grid_search(X_away, y_away, param_grid_poisson, preprocessing_pipeline_poisson_away, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_poisson'].best_estimator_, os.path.join('..', outdir, 'away_poisson.joblib'))
+    
+    # Random forest
+    # Home
+    results['home_rf'] = run_grid_search(X_home, y_home, param_grid_rf, preprocessing_pipeline_rf_home, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_rf'].best_estimator_, os.path.join('..', outdir, 'home_rf.joblib'))
+
+    # Away
+    results['away_rf'] = run_grid_search(X_away, y_away, param_grid_rf, preprocessing_pipeline_rf_away, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_rf'].best_estimator_, os.path.join('..', outdir, 'away_rf.joblib'))
+    
+    # XGBoost
+    # Home
+    results['home_xgb'] = run_grid_search(X_home, y_home, param_grid_xgb, preprocessing_pipeline_xgb_home, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['home_xgb'].best_estimator_, os.path.join('..', outdir, 'home_xgb.joblib'))
+
+    # Away
+    results['away_xgb'] = run_grid_search(X_away, y_away, param_grid_xgb, preprocessing_pipeline_xgb_away, scoring=scoring, cv=cv, n_jobs=n_jobs)
+    _save_model(results['away_xgb'].best_estimator_, os.path.join('..', outdir, 'away_xgb.joblib'))
+    
+    return results
+
+
+def load_model(path):
+    """
+    Loads a joblib file
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Model file not found: {path}")
+    model = joblib.load(path)
+    print(f"Model loaded from {path}")
+    return model
+
+
+def evaluate_model_metrics(model, X_test, y_test, plot_confusion=False):
+    """
+    Evaluates a model and returns main classification metrics
+    """
+    y_pred = model.predict(X_test)
+    
+    metrics = {
+        "accuracy": accuracy_score(y_test, y_pred),
+        "f1_macro": f1_score(y_test, y_pred, average='macro'),
+        "precision_macro": precision_score(y_test, y_pred, average='macro'),
+        "recall_macro": recall_score(y_test, y_pred, average='macro')
+    }
+    
+    print("Evaluation metrics:")
+    for k, v in metrics.items():
+        print(f"{k}: {v:.4f}")
+    
+    if plot_confusion:
+        cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=model.classes_, yticklabels=model.classes_)
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title("Confusion Matrix")
+        plt.show()
+    
+    return metrics
+
+
+def evaluate_regression_model(model, X_test, y_test):
+    """
+    Evaluates a regression model and returns MAE, RMSE, MSE, R2.
+    """
+    y_pred = model.predict(X_test)
+
+    metrics = {
+        "MAE": mean_absolute_error(y_test, y_pred),
+        "MSE": mean_squared_error(y_test, y_pred),
+        "RMSE": np.sqrt(mean_squared_error(y_test, y_pred)),
+        "R2": r2_score(y_test, y_pred)
+    }
+
+    print("Regression Evaluation Metrics:")
+    for k, v in metrics.items():
+        print(f"{k}: {v:.4f}")
+
+    return metrics
