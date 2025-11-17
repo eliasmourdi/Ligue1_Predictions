@@ -23,3 +23,9 @@ After setting up the environment, you can run the entire pipeline, from cleaning
 Each notebook is based on the config.yaml file for project-specific settings. These notebooks also rely on utility py files, located in the src directory.
 
 After that, ML models dedicated to predict Ligue 1 match scores will be saved in specific directories indicated in the config.yaml file.
+
+
+
+
+
+NB : yaura un dashboard, en parler ici + mettre des screens du dash dans le readme
