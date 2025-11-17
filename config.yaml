@@ -186,14 +186,22 @@ param_grid_lr:
     l1_ratio: [0.0, 0.15, 0.5]
     class_weight: [None, 'balanced']
 
-# Random forest
-param_grid_rf:
+# Primary Random forest
+param_grid_primary_rf:
     n_estimators: [100, 300, 600]
     max_depth: [None, 6, 10, 20]
     min_samples_split: [2, 5, 10]
     min_samples_leaf: [1, 2, 4]
     max_features: ['sqrt', 'log2', 0.5]
     class_weight: [None, 'balanced']
+
+# Secondary Random forest
+param_grid_secondary_rf:
+    n_estimators: [100, 300, 600]
+    max_depth: [None, 6, 10, 20]
+    min_samples_split: [2, 5, 10]
+    min_samples_leaf: [1, 2, 4]
+    max_features: ['sqrt', 'log2', 0.5]
 
 # XGBoost
 param_grid_xgb:
@@ -208,6 +216,7 @@ param_grid_xgb:
 # Poisson
 param_grid_poisson:
     alpha: [0.0, 0.01, 0.1, 1.0, 5.0, 10.0]    
+    fit_intercept: [True, False]
 
 
 # Models export
