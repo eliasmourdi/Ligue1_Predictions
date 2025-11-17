@@ -1,0 +1,9 @@
+body {
+    font-family: "Roboto", sans-serif;
+}
+
+.bk.panel-widget-box {
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fafafa;
+}
