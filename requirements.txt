@@ -7,3 +7,5 @@ adjustText
 optuna
 scikit-learn
 xgboost
+panel
+voila
