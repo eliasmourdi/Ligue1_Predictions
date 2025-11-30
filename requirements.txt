@@ -10,3 +10,4 @@ xgboost
 panel
 ipywidgets
 hvplot
+streamlit
