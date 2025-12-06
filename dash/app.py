@@ -8,7 +8,7 @@ sys.path.append(root_path)
 
 from home import render_home
 from general import render_general
-# from pages.team import render_team
+from team import render_team
 # from pages.prediction import render_prediction
 
 # -----------------------------
