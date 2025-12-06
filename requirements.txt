@@ -11,3 +11,4 @@ panel
 ipywidgets
 hvplot
 streamlit
+altair
