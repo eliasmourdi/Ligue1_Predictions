@@ -11,7 +11,7 @@ from src.data_analysis import ClubAnalysis
 
 
 def longest_consecutive_seasons(seasons):
-    """Return length of the longest consecutive seasons streak."""
+    """Return length of the longest consecutive seasons streak"""
     if len(seasons) == 0:
         return 0
     seasons_sorted = sorted(seasons)
@@ -38,9 +38,17 @@ def compute_team_history(df, team, DATE_COL, SEASON_COL, HOME_COL, AWAY_COL, HOM
     total_seasons_first_years = []
     for season in seasons_list:
         total_seasons_first_years.append(int(season.rsplit('/')[0]))
-        
+
+    # Max consecutive seasons
     max_consecutive_seasons = longest_consecutive_seasons(total_seasons_first_years)
-    consecutive_seasons = longest_consecutive_seasons(total_seasons_first_years) if 2024 in total_seasons_first_years else 0
+
+    # Number of current consecutive seasons
+    df[DATE_COL] = pd.to_datetime(df[DATE_COL])
+    current_year = df[DATE_COL].dt.year.max()
+    consecutive_seasons = 0
+    while current_year - 1 in total_seasons_first_years:
+        current_year -= 1
+        consecutive_seasons += 1
     
     # Last match
     last_match = team_matches.iloc[-1]
