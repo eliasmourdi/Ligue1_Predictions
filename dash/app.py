@@ -1,22 +1,47 @@
-import panel as pn
-pn.extension()  # IMPORTANT : pas de template ici !
+import streamlit as st
+import os
+import sys
+from pathlib import Path
 
-from pages.home import home_view
-from pages.team import team_view
-from pages.predict import predict_view
+root_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(root_path)
 
-def app():
-    tmpl = pn.template.FastListTemplate(
-        title="🏆 Ligue 1 Dashboard",
-        main=[home_view],
-        sidebar=[pn.pane.Markdown("## Navigation"),
-                 pn.layout.Divider(),
-                 pn.pane.Markdown("[🏠 Accueil](?page=home)"),
-                 pn.pane.Markdown("[👕 Équipes](?page=team)"),
-                 pn.pane.Markdown("[⚽ Prédictions](?page=predict)")],
-        theme="default",
-    )
-    return tmpl
+from home import render_home
+# from pages.general import render_general
+# from pages.team import render_team
+# from pages.prediction import render_prediction
 
+# -----------------------------
+# Page config
+# -----------------------------
+st.set_page_config(
+    page_title="Ligue 1 Dashboard",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-app().servable()
+# -----------------------------
+# Sidebar custom
+# -----------------------------
+st.sidebar.title("📂 Navigation")
+page = st.sidebar.radio(
+    "Go to:",
+    options=[
+        "🏠 Home",
+        "📊 General",
+        "🎯 Team",
+        "🔮 Prediction"
+    ]
+)
+
+# -----------------------------
+# Render selected page
+# -----------------------------
+if page == "🏠 Home":
+    render_home()
+elif page == "📊 General":
+    render_general()
+elif page == "🎯 Team":
+    render_team()
+elif page == "🔮 Prediction":
+    render_prediction()
