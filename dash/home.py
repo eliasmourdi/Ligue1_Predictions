@@ -38,8 +38,8 @@ TEST_PATH = os.path.join(os.path.join(root_path, config['preprocessed_dir']), co
 DATE_COL = config['date_column']
 df = load_data(TRAIN_PATH, TEST_PATH, DATE_COL)
 
-start_date = df[DATE_COL].min()
-end_date = df[DATE_COL].max()
+start_date = df[DATE_COL].min().date()
+end_date = df[DATE_COL].max().date()
 
 
 # -----------------------------------
