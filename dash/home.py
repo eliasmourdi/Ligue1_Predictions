@@ -37,7 +37,6 @@ end_date = df[DATE_COL].max().date()
 # -----------------------------------
 def render_home():
     st.set_page_config(page_title="Home", page_icon="🏠", layout="wide", initial_sidebar_state="expanded")
-
     st.title("🏠 Ligue 1 — Dashboard Overview")
 
     st.markdown(f"""

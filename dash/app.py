@@ -7,7 +7,7 @@ root_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(root_path)
 
 from home import render_home
-# from pages.general import render_general
+from general import render_general
 # from pages.team import render_team
 # from pages.prediction import render_prediction
 
