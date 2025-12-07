@@ -54,4 +54,7 @@ For that purpose, and therefore to use this dashboard, please follow the next in
 
 A web page will open, with the dashboard ready to be used.
 
-
+# To do list
+- improve feature engineering with new variables: manager sacked, best player injured, European matches during last week, travel distance,...
+- improve preprocessing pipeline to reduce run time
+- include absolute and relative features in dashboarding pipeline
