@@ -8,7 +8,7 @@ Welcome to this project focused on predicting the outcomes of Ligue 1 football m
 - Build a structured and reproducible data preprocessing pipeline
 - Perform feature engineering to extract meaningful insights from raw match data
 - Train and evaluate machine learning models to predict match results
-- Visualize results and future predictions with an intercative platform
+- Visualize results and future predictions with an interactive platform
 
 # Results / added value
 - Prediction of a final result football Ligue 1 match (home win, draw, away win) with more than 60% accuracy
@@ -23,7 +23,7 @@ After setting up the environment, you can run the entire pipeline, from cleaning
 - 01-cleaning notebook: clean raw data (remove unnecessary columns, rename columns/values). Input is therefore raw data files, output is cleaned dataframes
 - 02-preprocessing notebook: generate features/indicators for predictions, such as team performance in recent matches and head-to-head history. More details about created indicators in this section are in the Preprocessing class documentation or in the config.yaml file
 - 03-data_analysis notebook: explore data distributions, correlations, and insights
-- 04-modeling notebook: train 2 ML models. First, a primary model to predict match issues (home, draw, away). Knowing these issue probabilities, secondary models aim at predicting the number of goals scored by each team
+- 04-modeling notebook: train 2 ML models. First, a primary model to predict match outcomes (home, draw, away). Knowing these issue probabilities, secondary models aim at predicting the number of goals scored by each team
 
 Each notebook is based on the config.yaml file for project-specific settings. These notebooks also rely on utility py files, located in the src directory.
 
@@ -39,14 +39,7 @@ This dashboard is composed by 4 pages:
 <img width="1390" height="737" alt="image" src="https://github.com/user-attachments/assets/d6d3a35f-f219-4568-927b-753a9acd885f" />
 
 - a general page, providing an overview of main metrics in football analytics
-
-<img width="1833" height="767" alt="image" src="https://github.com/user-attachments/assets/dca91597-7761-4a26-9c7d-d6e89c92845e" />
-
 - a team page, allowing to focus on a certain team
-
-<img width="1845" height="773" alt="image" src="https://github.com/user-attachments/assets/46a0479b-107f-485e-b35b-ceaeda2948ec" />
-<img width="1498" height="833" alt="image" src="https://github.com/user-attachments/assets/91190d2c-1221-4c72-9ff2-c361f594589b" />
-
 - a prediction page, allowing to predict the score of a Ligue 1 match with previously saved models
 
 <img width="1815" height="753" alt="image" src="https://github.com/user-attachments/assets/80ac117b-bd42-40a1-a526-e98672bfe5d2" />
@@ -60,6 +53,6 @@ For that purpose, and therefore to use this dashboard, please follow the next in
 A web page will open, with the dashboard ready to be used.
 
 # To do list
-- improve feature engineering with new variables: manager sacked, best player injured, European matches during last week, travel distance,...
+- improve feature engineering with new variables: coach changes, best player injured, European matches during last week, travel distance,...
 - improve preprocessing pipeline to reduce run time
 - include absolute and relative features in dashboarding pipeline
