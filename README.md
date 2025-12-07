@@ -35,15 +35,14 @@ The 'dash' folder in this repo allows to understand the construction of a dashbo
 
 This dashboard is composed by 4 pages:
 - a home page, with general information and hypotheses
-
-<img width="1390" height="737" alt="image" src="https://github.com/user-attachments/assets/d6d3a35f-f219-4568-927b-753a9acd885f" />
-
 - a general page, providing an overview of main metrics in football analytics
 - a team page, allowing to focus on a certain team
 - a prediction page, allowing to predict the score of a Ligue 1 match with previously saved models
 
+
 <img width="1815" height="753" alt="image" src="https://github.com/user-attachments/assets/80ac117b-bd42-40a1-a526-e98672bfe5d2" />
 <img width="1839" height="838" alt="image" src="https://github.com/user-attachments/assets/e4e90962-48ee-4cb0-a240-b30f634e0143" />
+
 
 For that purpose, and therefore to use this dashboard, please follow the next instructions:
 - clone this repo
