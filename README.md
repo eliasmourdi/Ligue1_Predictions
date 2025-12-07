@@ -10,6 +10,11 @@ Welcome to this project focused on predicting the outcomes of Ligue 1 football m
 - Train and evaluate machine learning models to predict match results
 - Visualize results and future predictions with an intercative platform
 
+# Results / added value
+- Prediction of a final result football Ligue 1 match (home win, draw, away win) with more than 60% accuracy
+- According to the previous prediction, prediction of the goals scored by the two teams involved in the match
+- Creation of a dashboard dedicated to interactive exploration and scenario analysis
+
 # How to use this repo?
 
 Before all the steps below, you can create a virtual environment from the requirements.txt file in the root of this repo.
