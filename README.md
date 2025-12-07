@@ -33,16 +33,13 @@ After that, ML models dedicated to predict Ligue 1 match scores will be saved in
 
 The 'dash' folder in this repo allows to understand the construction of a dashboard allowing to generate new predictions.
 
+<img width="1404" height="753" alt="image" src="https://github.com/user-attachments/assets/22ada752-4338-4e33-915b-7448d1e885f6" />
+
 This dashboard is composed by 4 pages:
 - a home page, with general information and hypotheses
 - a general page, providing an overview of main metrics in football analytics
 - a team page, allowing to focus on a certain team
 - a prediction page, allowing to predict the score of a Ligue 1 match with previously saved models
-
-
-<img width="1815" height="753" alt="image" src="https://github.com/user-attachments/assets/80ac117b-bd42-40a1-a526-e98672bfe5d2" />
-<img width="1839" height="838" alt="image" src="https://github.com/user-attachments/assets/e4e90962-48ee-4cb0-a240-b30f634e0143" />
-
 
 For that purpose, and therefore to use this dashboard, please follow the next instructions:
 - clone this repo
