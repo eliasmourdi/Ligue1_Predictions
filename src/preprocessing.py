@@ -679,7 +679,7 @@ class Preprocessing:
 
     def computes_ext_factors(self):
         """
-        Computes external factors which could imapct a match issue
+        Computes external factors which could impact a match issue
 
         Computed indicators here are the following:
         - number of past seasons in L1 based on historical data (more experience in the championship)
