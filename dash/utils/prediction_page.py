@@ -8,7 +8,7 @@ root_path = os.path.abspath(os.path.join(os.getcwd(), ".."))
 root_path = os.path.abspath(os.path.join(root_path, ".."))
 sys.path.append(root_path)
 
-from src.modeling import load_model 
+from src.modeling import load_model
 
 
 def build_preprocessed_input_row(preprocessed_df, home_team, away_team, season, odd_home, odd_draw, odd_away, config):
@@ -405,7 +405,7 @@ def build_preprocessed_input_row(preprocessed_df, home_team, away_team, season, 
     return input_row
 
 
-def predict_match(home_team, away_team, primary_model, secondary_model, config):
+def primary_prediction(input_row, primary_model, config):
     """
     Predicts the final result and the score of the match knowing the involved teams and the chosen models
     """
@@ -418,7 +418,21 @@ def predict_match(home_team, away_team, primary_model, secondary_model, config):
         
     if primary_model == 'XGBoost':
         primary = load_model(os.path.join('..', config['primary_models_dir'], 'xgb.joblib'))
-        
+
+    pre = primary.named_steps["pre"]
+    num_cols = pre.transformers_[0][2]
+    cat_cols = pre.transformers_[1][2]
+    
+    primary_expected_features = cat_cols + num_cols
+    primary_output = primary.predict_proba(input_row[primary_expected_features])
+    proba_home, proba_draw, proba_away = float(primary_output[0][2]), float(primary_output[0][1]), float(primary_output[0][0])
+    return proba_home, proba_draw, proba_away
+
+
+def secondary_prediction(input_row, secondary_model, proba_home, proba_draw, proba_away, config):
+    """
+    Predicts the final result and the score of the match knowing the involved teams and the chosen models
+    """
     if secondary_model == 'Poisson':
         home_secondary = load_model(os.path.join('..', config['secondary_models_dir'], 'home_poisson.joblib'))
         away_secondary = load_model(os.path.join('..', config['secondary_models_dir'], 'away_poisson.joblib'))
@@ -431,13 +445,22 @@ def predict_match(home_team, away_team, primary_model, secondary_model, config):
         home_secondary = load_model(os.path.join('..', config['secondary_models_dir'], 'home_xgb.joblib'))
         away_secondary = load_model(os.path.join('..', config['secondary_models_dir'], 'away_xgb.joblib'))
 
+    input_row['proba_home'] = proba_home
+    input_row['proba_draw'] = proba_draw
+    input_row['proba_away'] = proba_away
+
+    home_pre = home_secondary.named_steps["pre"]
+    home_num_cols = home_pre.transformers_[0][2]
+    home_cat_cols = home_pre.transformers_[1][2]
+
+    away_pre = away_secondary.named_steps["pre"]
+    away_num_cols = away_pre.transformers_[0][2]
+    away_cat_cols = away_pre.transformers_[1][2]
     
+    home_secondary_expected_features = home_cat_cols + home_num_cols
+    away_secondary_expected_features = away_cat_cols + away_num_cols
+    
+    home_secondary_output = home_secondary.predict(input_row[home_secondary_expected_features])[0]
+    away_secondary_output = away_secondary.predict(input_row[away_secondary_expected_features])[0]
 
-
-
-
-
-
-
-
-
+    return home_secondary_output, away_secondary_output
