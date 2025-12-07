@@ -136,7 +136,7 @@ def print_ranking_last_matches(df, HOME_COL, AWAY_COL, HOME_GOALS, AWAY_GOALS, L
 
     chart = (
         alt.Chart(form_chart_df)
-        .mark_bar()
+        .mark_bar(color='blue')
         .encode(
             x=alt.X("Team:N", sort=form_chart_df["Team"].tolist()),
             y=alt.Y("Points:Q"),

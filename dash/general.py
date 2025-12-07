@@ -40,15 +40,12 @@ def render_general():
     st.set_page_config(page_title="General", page_icon="📊", layout="wide", initial_sidebar_state="expanded")
     st.title("📊 General Dashboard")
     
-    DATE_COL = config['date_column']
     SEASON_COL = config['season_column']
     HOME_COL = config['home_column']
     AWAY_COL = config['away_column']
     HOME_GOALS = config['nb_goals_home_column']
     AWAY_GOALS = config['nb_goals_away_column']
     FINAL_RESULT = config['final_result_column']
-
-    df = load_data(TRAIN_PATH, TEST_PATH, DATE_COL)
 
     start_date = df[DATE_COL].min().date()
     end_date = df[DATE_COL].max().date()

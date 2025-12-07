@@ -9,7 +9,7 @@ sys.path.append(root_path)
 from home import render_home
 from general import render_general
 from team import render_team
-# from pages.prediction import render_prediction
+from prediction import render_prediction
 
 # -----------------------------
 # Page config

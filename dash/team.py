@@ -34,9 +34,9 @@ FINAL_RESULT = config['final_result_column']
 df = load_data(TRAIN_PATH, TEST_PATH, DATE_COL)
 
 
-# -------------------
-# Render Team Page
-# -------------------
+# ---------------------
+# Team page formatting
+# ---------------------
 def render_team():
     st.set_page_config(page_title="Team", page_icon="🎯", layout="wide")
 
@@ -154,16 +154,19 @@ def render_team():
             axis=1
             ).mean()
             fav_list.append({'Opponent': op, 'AvgPoints': round(points, 2)})
+        
+    try:
+        fav_df = pd.DataFrame(fav_list).sort_values('AvgPoints', ascending=False)
 
-    fav_df = pd.DataFrame(fav_list).sort_values('AvgPoints', ascending=False)
+        # Altair graphs
+        chart_fav = alt.Chart(fav_df).mark_bar(color='blue').encode(
+            x=alt.X('Opponent', sort='-y'),
+            y='AvgPoints'
+        ).properties(title=f"{selected_team} - Favorite opponents")
 
-    # Graphiques Altair
-    chart_fav = alt.Chart(fav_df).mark_bar(color='blue').encode(
-        x=alt.X('Opponent', sort='-y'),
-        y='AvgPoints'
-    ).properties(title=f"{selected_team} - Favorite opponents")
-
-    st.altair_chart(chart_fav, use_container_width=True)
+        st.altair_chart(chart_fav, use_container_width=True)
+    except KeyError:
+        st.warning(f"⚠️​ Not enough matches in Ligue 1 to define opponent performances vs {selected_team}")
 
 
     # --- Filter by season ---
