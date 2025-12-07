@@ -1,6 +1,6 @@
 # Ligue 1 match predictions
 
-Welcome to this project focused on predicting the outcomes of Ligue 1 football matches using data science techniques.
+Welcome to this project focused on predicting the outcomes of Ligue 1 football matches using data science techniques!
 
 # Project objectives
 
@@ -8,7 +8,7 @@ Welcome to this project focused on predicting the outcomes of Ligue 1 football m
 - Build a structured and reproducible data preprocessing pipeline
 - Perform feature engineering to extract meaningful insights from raw match data
 - Train and evaluate machine learning models to predict match results
-- Improve the models from model results insights
+- Visualize results and future predictions with an intercative platform
 
 # How to use this repo?
 
@@ -24,8 +24,7 @@ Each notebook is based on the config.yaml file for project-specific settings. Th
 
 After that, ML models dedicated to predict Ligue 1 match scores will be saved in specific directories indicated in the config.yaml file.
 
+# How to generate a new prediction?
 
+The 'dash' folder in this repo allows to understand the construction of a dashboard, using <img width="1470" height="415" alt="image" src="https://github.com/user-attachments/assets/c0e3aff4-7cc1-404b-91af-64096deee4ef" />
 
-
-
-NB : yaura un dashboard, en parler ici + mettre des screens du dash dans le readme
