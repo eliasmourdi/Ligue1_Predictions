@@ -33,16 +33,33 @@ After that, ML models dedicated to predict Ligue 1 match scores will be saved in
 
 The 'dash' folder in this repo allows to understand the construction of a Streamlit dashboard allowing to generate new predictions.
 
+This dashboard is composed by 4 pages:
+- a home page, with general information and hypotheses
+
 <img width="1404" height="753" alt="image" src="https://github.com/user-attachments/assets/22ada752-4338-4e33-915b-7448d1e885f6" />
 
 
-This dashboard is composed by 4 pages:
-- a home page, with general information and hypotheses
 - a general page, providing an overview of main metrics in football analytics
+
+
+<img width="1820" height="594" alt="image" src="https://github.com/user-attachments/assets/b0059941-7d92-4caa-8f8e-2314a3f86b7e" />
+
+
 - a team page, allowing to focus on a certain team
+
+
+<img width="1823" height="717" alt="image" src="https://github.com/user-attachments/assets/5305b1ac-a67f-4c92-b689-6ea83c4cec8c" />
+<img width="1829" height="764" alt="image" src="https://github.com/user-attachments/assets/bebc860a-5bd8-4eb1-b5a7-0e7f85c5c7c6" />
+
+
 - a prediction page, allowing to predict the score of a Ligue 1 match with previously saved models
 
-For that purpose, and therefore to use this dashboard, please follow the next instructions:
+
+<img width="1858" height="656" alt="image" src="https://github.com/user-attachments/assets/1e898326-8e0e-44c3-9284-60f3d90cc0fb" />
+<img width="1861" height="851" alt="image" src="https://github.com/user-attachments/assets/6411cd0a-42e7-4a06-9da2-e0317aba729d" />
+
+
+To use this dashboard, please follow the next instructions:
 - clone this repo
 - run the 4 notebooks as explained in the 'How to use this repo' section, to load data and models
 - in the terminal, activate your virtual environment and then run 'streamlit run dash/app.py' (you need to locate in the root folder)
