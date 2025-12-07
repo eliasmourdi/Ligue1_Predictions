@@ -34,9 +34,9 @@ FINAL_RESULT = config['final_result_column']
 df = load_data(TRAIN_PATH, TEST_PATH, DATE_COL)
 
 
-# -------------------
-# Render Team Page
-# -------------------
+# ---------------------
+# Team page formatting
+# ---------------------
 def render_team():
     st.set_page_config(page_title="Team", page_icon="🎯", layout="wide")
 
