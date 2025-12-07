@@ -35,6 +35,7 @@ The 'dash' folder in this repo allows to understand the construction of a dashbo
 
 <img width="1404" height="753" alt="image" src="https://github.com/user-attachments/assets/22ada752-4338-4e33-915b-7448d1e885f6" />
 
+
 This dashboard is composed by 4 pages:
 - a home page, with general information and hypotheses
 - a general page, providing an overview of main metrics in football analytics
