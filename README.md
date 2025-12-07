@@ -31,7 +31,7 @@ After that, ML models dedicated to predict Ligue 1 match scores will be saved in
 
 # How to generate a new prediction?
 
-The 'dash' folder in this repo allows to understand the construction of a dashboard allowing to generate new predictions.
+The 'dash' folder in this repo allows to understand the construction of a Streamlit dashboard allowing to generate new predictions.
 
 <img width="1404" height="753" alt="image" src="https://github.com/user-attachments/assets/22ada752-4338-4e33-915b-7448d1e885f6" />
 
