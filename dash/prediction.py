@@ -136,7 +136,7 @@ def render_prediction():
         # Secondary models
         st.subheader("📈 Goal Distribution per Team")
 
-        max_goals_plot = 8 
+        max_goals_plot = 8
         x = np.arange(0, max_goals_plot + 1)
 
         if secondary_model == "Poisson":
@@ -156,4 +156,19 @@ def render_prediction():
             f"{away_team}": away_probs
         }, index=x)
         
-        st.line_chart(df_goals)
+        df_goals_chart = df_goals.reset_index().melt(id_vars='index', var_name='Team', value_name='Probability')
+        df_goals_chart.rename(columns={'index': 'Goals'}, inplace=True)
+        
+        chart = alt.Chart(df_goals_chart).mark_line(point=True).encode(
+            x=alt.X('Goals:O', axis=alt.Axis(labelAngle=0, title="Goals")),
+            y='Probability:Q',
+            color='Team:N'
+        ).properties(
+            width=600,
+            height=400
+        )
+        
+        st.altair_chart(chart, use_container_width=True)
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
+    st.caption("Developed by Elias Mourdi — 2025")
